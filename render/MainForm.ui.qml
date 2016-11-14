@@ -76,6 +76,11 @@ Rectangle {
 			var obj = Qt.createQmlObject(source, battleField, "dynamicBullet_" + bullet.id);
 			game.bulletsMap[bullet.id] = obj;
 			game.bulletsList.push(obj)
+
+			var source = 'import QtMultimedia 5.6; Audio { id: fireSound; source: "audio/fire"; }'; // audioRole: GameRole; does not work here
+			var audio = Qt.createQmlObject(source, battleField, "dynamicBulletAudio_" + bullet.id);
+			audio.onStopped.connect(function(){/*console.log("destroy audio");*/ audio.destroy();})
+			audio.play()
 		}
 
 		onBulletMoved: {
