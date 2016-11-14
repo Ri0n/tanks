@@ -172,7 +172,7 @@ void QMLBridge::removeBlock(const QRect &r)
 
 void QMLBridge::humanTankAction(int player, int key)
 {
-    qDebug() << "Catched start!";
+    //qDebug() << "Catched start!";
     if (key < 4) {
         _game->playerMoveRequested(player, key);
     } else {
@@ -182,7 +182,7 @@ void QMLBridge::humanTankAction(int player, int key)
 
 void QMLBridge::humanTankActionStop(int player, int key)
 {
-    qDebug() << "Catched stop!";
+    //qDebug() << "Catched stop!";
     if (key < 4) {
         _game->playerStopMoveRequested(player, key);
     } else {

@@ -1,6 +1,8 @@
 #ifndef TANKS_HUMANPLAYER_H
 #define TANKS_HUMANPLAYER_H
 
+#include <QLinkedList>
+
 #include "abstractplayer.h"
 #include "basics.h"
 
@@ -17,7 +19,7 @@ public:
     void start();
     void move(Direction dir);
     void fire();
-    void stop();
+    void stop(Direction dir);
     void stopFire();
     inline int index() const { return _playerIndex; }
 
@@ -29,7 +31,7 @@ private:
     int _lifes;
     bool _moving;
     bool _shooting;
-    //QLinkedList<Direction> _movingDir;
+    QLinkedList<Direction> _movingDir;
 };
 
 } // namespace Tanks

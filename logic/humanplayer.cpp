@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "humanplayer.h"
 #include "game.h"
 #include "board.h"
@@ -28,8 +30,13 @@ void HumanPlayer::start()
 void HumanPlayer::move(Direction dir)
 {
     if (_tank) {
-        _moving = true;
-        _tank->setDirection(dir);
+        Direction curDir = _tank->direction();
+        _movingDir.removeAll(dir);
+        _movingDir.prepend(dir);
+        if (curDir != dir) {
+            _tank->setDirection(dir);
+            emit moved(); // just to update orientation
+        }
     }
 }
 
@@ -38,9 +45,14 @@ void HumanPlayer::fire()
     _shooting = true;
 }
 
-void HumanPlayer::stop()
+void HumanPlayer::stop(Direction dir)
 {
-    _moving = false;
+    // we can stop pressing a key, but it does not mean other keys are not pressed
+    // so we have to figure out what's left and continue moving
+    _movingDir.removeAll(dir);
+    if (!_movingDir.isEmpty()) {
+        move(_movingDir.takeFirst());
+    }
 }
 
 void HumanPlayer::stopFire()
@@ -57,7 +69,7 @@ void HumanPlayer::clockTick()
     QRect fmr;
     Board::BlockProps props;
 
-    bool shouldMove = _moving && _tank->canMove();
+    bool shouldMove = !_movingDir.isEmpty() && _tank->canMove();
     bool shouldShoot = _shooting && _tank->canShoot();
     if (shouldMove || shouldShoot) {
         fmr = _tank->forwardMoveRect(); // space before tank it's going to occupy

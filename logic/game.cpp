@@ -53,9 +53,9 @@ void Game::playerStopMoveRequested(int playerNum, int direction)
     auto player = _humans.value(playerNum);
     if (player && player->tank()) {
         Direction relDir = (Direction)direction;
-        if (player->tank()->direction() == relDir) {
-            player->stop();
-        }
+        //if (player->tank()->direction() == relDir) {
+            player->stop(relDir);
+        //}
     }
 }
 
