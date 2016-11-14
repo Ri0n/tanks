@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>MainForm.ui.qml</file>
+    </qresource>
+    <qresource prefix="/img">
+        <file alias="water">img/water.png</file>
+        <file alias="ice">img/ice.png</file>
+        <file alias="flag">img/flag.png</file>
+        <file alias="flag_broken">img/flag_broken.png</file>
+        <file alias="concrete">img/concrete.png</file>
+        <file alias="bush">img/bush.png</file>
+        <file alias="brick">img/brick.png</file>
+        <file alias="tanks">img/tanks.png</file>
+        <file alias="bullet">img/bullet.png</file>
+    </qresource>
+</RCC>
