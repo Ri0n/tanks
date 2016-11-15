@@ -2,30 +2,25 @@
 #define TANKS_GAME_H
 
 #include <QObject>
-#include <QQueue>
-#include <QLinkedList>
-
-#include "humanplayer.h"
-#include "aiplayer.h"
-
-class QTimer;
+#include <QRect>
+#include <QSharedPointer>
 
 namespace Tanks {
 
+class AbstractPlayer;
 class Board;
-class AbstractMapLoader;
-class AI;
+class Flag;
 
+class GamePrivate;
 class Game : public QObject
 {
     Q_OBJECT
 public:
     explicit Game(QObject *parent = 0);
     ~Game();
-    Board *board() const { return _board; }
+    Board *board() const;
     void setPlayersCount(int n);
-    QSharedPointer<Tank> takePendingNewTank()
-    { return _pendingNewTanks.isEmpty()? QSharedPointer<Tank>() : _pendingNewTanks.dequeue(); }
+    QSharedPointer<Flag> &flag() const;
 
 private:
     void connectPlayerSignals(AbstractPlayer *player);
@@ -39,6 +34,7 @@ signals:
     void bulletRemoved(QObject*);
     void bulletMoved(QObject*);
     void blockRemoved(QRect);
+    void flagLost();
 
 public slots:
     void playerMoveRequested(int playerNum, int direction);
@@ -56,18 +52,8 @@ private slots:
     void tankFired();
     void moveTank();
 private:
-    Board *_board;
-    AbstractMapLoader *_mapLoader;
-    QTimer *_clock;
-    quint8 _playersCount;
-    AI *_ai;
-
-    QList<QSharedPointer<HumanPlayer>> _humans;
-    QList<QSharedPointer<AIPlayer>> _robots;
-    QLinkedList<QSharedPointer<Bullet>> _bullets;
-
-    QQueue<QSharedPointer<Tank>> _pendingNewTanks;
-
+    friend class GamePrivate;
+    GamePrivate *_d;
 };
 
 } // namespace Tanks

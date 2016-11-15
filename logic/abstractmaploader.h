@@ -30,6 +30,7 @@ public:
     virtual QList<quint8> enemyTanks() const = 0;
     virtual QList<QPoint> enemyStartPositions() const = 0;
     virtual QList<QPoint> friendlyStartPositions() const = 0;
+    virtual QPoint flagPosition() const = 0;
 };
 
 } // namespace Tanks

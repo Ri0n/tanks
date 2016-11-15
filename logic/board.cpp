@@ -39,6 +39,11 @@ bool Board::loadMap(AbstractMapLoader *loader)
         }
         renderBlock(block.type, cropped);
     }
+
+    _flagPosition = loader->flagPosition() * MAP_SCALE_FACTOR;
+    renderBlock(Nothing, QRect(_flagPosition, QSize(4,4)));
+    renderFlagFrame(Brick);
+
     _initialEnemyTanks = loader->enemyTanks();
 
     foreach (const QPoint &p, loader->enemyStartPositions()) {
@@ -54,13 +59,27 @@ bool Board::loadMap(AbstractMapLoader *loader)
 
 void Board::renderBlock(MapObjectType type, const QRect &area)
 {
-    int start = posToMapIndex(area.topLeft());
-    for (int r = 0; r < area.height(); r++) {
-        for (int c = 0; c < area.width(); c++) {
+    QRect cr = QRect(QPoint(0,0),_size) & area;
+
+    if (cr.isEmpty())
+        return;
+
+    int start = posToMapIndex(cr.topLeft());
+    for (int r = 0; r < cr.height(); r++) {
+        for (int c = 0; c < cr.width(); c++) {
             _map[start + c] = type;
         }
         start += _size.width();
     }
+}
+
+void Board::renderFlagFrame(MapObjectType type)
+{
+    QPoint tl = _flagPosition - QPoint(2,2);
+    renderBlock(type, QRect(tl, QSize(2,8)));
+    renderBlock(type, QRect(tl, QSize(8,2)));
+    renderBlock(type, QRect(tl + QPoint(0, 6), QSize(8,2)));
+    renderBlock(type, QRect(tl + QPoint(6, 0), QSize(2,8)));
 }
 
 int Board::blockDivider() const

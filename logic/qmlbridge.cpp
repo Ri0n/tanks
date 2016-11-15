@@ -8,6 +8,7 @@
 #include "board.h"
 #include "abstractmaploader.h"
 #include "tank.h"
+#include "flag.h"
 
 
 namespace Tanks {
@@ -32,6 +33,7 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     connect(_game, &Game::blockRemoved, this, &QMLBridge::removeBlock);
     connect(_game, &Game::bulletRemoved, this, &QMLBridge::removeBullet);
     connect(_game, &Game::bulletMoved, this, &QMLBridge::moveBullet);
+    connect(_game, &Game::flagLost, this, &QMLBridge::flagChanged);
     //connect(_game, &Game::playerRestarted, this, &QMLBridge::playerRestarted)
 
     connect(this, SIGNAL(qmlTankAction(int,int)), SLOT(humanTankAction(int,int)));
@@ -39,9 +41,30 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     _game->start();
 }
 
+QString QMLBridge::lowerFilename() const
+{
+    return _lowerFilename;
+}
+
+QString QMLBridge::bushFilename() const
+{
+    return _bushFilename;
+}
+
 QSize QMLBridge::boardImageSize() const
 {
     return _game->board()->size() * minBlockSize;
+}
+
+QRect QMLBridge::flagGeometry() const
+{
+    QRect g = _game->flag()->geometry();
+    return QRect(g.topLeft() * minBlockSize, g.size() * minBlockSize);
+}
+
+QString QMLBridge::flagFile() const
+{
+    return _game->flag()->isBroken()? "img/flag_broken" : "img/flag";
 }
 
 void QMLBridge::mapLoaded()

@@ -26,6 +26,7 @@ public:
     QList<quint8> enemyTanks() const;
     QList<QPoint> enemyStartPositions() const;
     QList<QPoint> friendlyStartPositions() const;
+    QPoint flagPosition() const;
 
 private:
     void generateShape(const PendingShape &shape);

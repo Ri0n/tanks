@@ -52,7 +52,17 @@ Rectangle {
 			lowerLayer.lowerImage = "file://" + game.mapImageFilename
 			lowerLayer.loadImage(lowerLayer.lowerImage)
 			bushLayer.source = "file://" + game.bushImageFilename
+
+			var g = game.flagGeometry
+			flag.x = g.x
+			flag.y = g.y
+			flag.width = g.width
+			flag.height = g.height
+			flag.source = game.flagFile
+
 		}
+
+		onFlagChanged: { flag.source = game.flagFile; }
 
 		onNewTank: {
 
@@ -93,9 +103,9 @@ Rectangle {
 			game.bulletsMap[bullet.id] = obj;
 			game.bulletsList.push(obj)
 
-			var source = 'import QtMultimedia 5.6; Audio { id: fireSound; source: "audio/fire"; }'; // audioRole: GameRole; does not work here
+			var source = 'import QtMultimedia 5.6; Audio { source: "audio/fire"; }'; // audioRole: GameRole; does not work here
 			var audio = Qt.createQmlObject(source, battleField, "dynamicBulletAudio_" + bullet.id);
-			audio.onStopped.connect(function(){/*console.log("destroy audio");*/ audio.destroy();})
+			audio.stopped.connect(audio.destroy)
 			audio.play()
 		}
 
@@ -183,41 +193,39 @@ Rectangle {
 		z: 100
 	}
 
+	Image {
+		id: flag
+		smooth: false
+	}
 
-	focus: true
-	Keys.onPressed: {
+
+	function handleKeyEvent(event, gameHandler)
+	{
 		if(event.isAutoRepeat) return
 
 		var p1res = game.p1keys.indexOf(event.key);
 		if (p1res != -1) {
 			event.accepted = true;
-			game.qmlTankAction(0, p1res);
+			gameHandler(0, p1res);
 
 		}
 
 		var p2res = game.p2keys.indexOf(event.key);
 		if (p2res != -1) {
 			event.accepted = true;
-			game.qmlTankAction(1, p2res);
+			gameHandler(1, p2res);
 
 		}
 
 	}
 
+	focus: true
+	Keys.onPressed: {
+		handleKeyEvent(event, game.qmlTankAction)
+	}
+
 	Keys.onReleased: {
-		if(event.isAutoRepeat) return
-
-		var p1res = game.p1keys.indexOf(event.key);
-		if (p1res != -1) {
-			event.accepted = true;
-			game.qmlTankActionStop(0, p1res);
-		}
-
-		var p2res = game.p2keys.indexOf(event.key);
-		if (p2res != -1) {
-			event.accepted = true;
-			game.qmlTankActionStop(1, p2res);
-		}
+		handleKeyEvent(event, game.qmlTankActionStop)
 	}
 
 }

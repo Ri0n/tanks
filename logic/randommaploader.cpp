@@ -152,4 +152,9 @@ QList<QPoint> RandomMapLoader::friendlyStartPositions() const
                            << QPoint(boardWidth / 2 + 3, boardHeight - 2);
 }
 
+QPoint RandomMapLoader::flagPosition() const
+{
+    return QPoint(boardWidth / 2 - 2, boardHeight - 2);
+}
+
 } // namespace Tanks

@@ -96,7 +96,9 @@ public:
     inline const QList<QPoint> &friendlyStartPositions() const
     { return _friendlyStartPositions; }
 
+    inline const QPoint &flagPosition() const { return _flagPosition; }
 
+    void renderFlagFrame(MapObjectType type);
 signals:
 
 public slots:
@@ -107,6 +109,7 @@ private:
     QList<quint8> _initialEnemyTanks;
     QList<QPoint> _enemyStartPositions;
     QList<QPoint> _friendlyStartPositions;
+    QPoint _flagPosition;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Board::BlockProps)

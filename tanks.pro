@@ -19,7 +19,8 @@ SOURCES += logic/main.cpp \
     logic/abstractplayer.cpp \
     logic/humanplayer.cpp \
     logic/aiplayer.cpp \
-    logic/ai.cpp
+    logic/ai.cpp \
+    logic/flag.cpp
 
 RESOURCES += render/qml.qrc
 
@@ -46,4 +47,5 @@ HEADERS += \
     logic/humanplayer.h \
     logic/aiplayer.h \
     logic/ai.h \
-    logic/basics.h
+    logic/basics.h \
+    logic/flag.h
