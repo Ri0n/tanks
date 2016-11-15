@@ -15,6 +15,7 @@ public:
     int lifesCount() const;
 
     void start();
+    void clockTick();
 
 
 private:

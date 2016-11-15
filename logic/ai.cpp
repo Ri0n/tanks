@@ -43,9 +43,8 @@ void AI::clockTick()
 {
     if (_activateClock) {
         _activateClock--;
-        return;
     }
-    if (_inactivePlayers.count() && _tanks.count()) {
+    if (!_activateClock && _inactivePlayers.count() && _tanks.count()) {
         auto player = _inactivePlayers.takeLast();
         _activePlayers.append(player);
         player->start();
