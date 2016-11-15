@@ -28,7 +28,7 @@ public:
     { return _pendingNewTanks.isEmpty()? QSharedPointer<Tank>() : _pendingNewTanks.dequeue(); }
 
 private:
-
+    void connectPlayerSignals(AbstractPlayer *player);
 
 signals:
     void mapLoaded();

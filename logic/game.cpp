@@ -18,7 +18,7 @@ Game::Game(QObject *parent) : QObject(parent),
     _ai = new AI(this);
     _mapLoader = new RandomMapLoader();
     _clock = new QTimer(this);
-    _clock->setInterval(100);
+    _clock->setInterval(50);
     connect(_clock, &QTimer::timeout, this, &Game::clockTick);
 }
 
@@ -32,9 +32,17 @@ void Game::setPlayersCount(int n)
     _playersCount = qMax(1, qMin(n, 20)); // it makes me think about network support :)
 }
 
+void Game::connectPlayerSignals(AbstractPlayer *player)
+{
+    connect(player, &AbstractPlayer::newTankAvailable, this, &Game::newTankAvailable);
+    connect(player, &AbstractPlayer::tankDestroyed, this, &Game::tankDestroyed);
+    connect(player, &AbstractPlayer::fired, this, &Game::tankFired);
+    connect(player, &AbstractPlayer::moved, this, &Game::moveTank);
+}
+
 void Game::playerMoveRequested(int playerNum, int direction)
 {
-    auto player = _humans.value(playerNum);
+    auto player = _humans.value(playerNum % _humans.count());
     if (player) {
         player->move((Direction)direction);
     }
@@ -42,7 +50,7 @@ void Game::playerMoveRequested(int playerNum, int direction)
 
 void Game::playerFireRequested(int playerNum)
 {
-    auto player = _humans.value(playerNum);
+    auto player = _humans.value(playerNum % _humans.count());
     if (player) {
         player->fire();
     }
@@ -50,18 +58,15 @@ void Game::playerFireRequested(int playerNum)
 
 void Game::playerStopMoveRequested(int playerNum, int direction)
 {
-    auto player = _humans.value(playerNum);
-    if (player && player->tank()) {
-        Direction relDir = (Direction)direction;
-        //if (player->tank()->direction() == relDir) {
-            player->stop(relDir);
-        //}
+    auto player = _humans.value(playerNum % _humans.count());
+    if (player) {
+        player->stop((Direction)direction);
     }
 }
 
 void Game::playerStopFireRequested(int playerNum)
 {
-    auto player = _humans.value(playerNum);
+    auto player = _humans.value(playerNum % _humans.count());
     if (player) {
         player->stopFire();
     }
@@ -80,35 +85,26 @@ void Game::start()
 
 void Game::mapReady()
 {
-
     emit mapLoaded();
 
     for (int i = 0; i < _playersCount; i++) {
         auto human = new HumanPlayer(this,i);
-        connect(human, &AbstractPlayer::newTankAvailable, this, &Game::newTankAvailable);
-        connect(human, &AbstractPlayer::tankDestroyed, this, &Game::tankDestroyed);
-        connect(human, &AbstractPlayer::fired, this, &Game::tankFired);
-        connect(human, &AbstractPlayer::moved, this, &Game::moveTank);
+        connectPlayerSignals(human);
         _humans.append(QSharedPointer<HumanPlayer>(human));
         human->start();
     }
 
-    // oh I really should optimize out this code duplication
-    for (int i = 0; i < 4; i++) {
-        auto robot = new AIPlayer(_ai);
-        connect(robot, &AbstractPlayer::newTankAvailable, this, &Game::newTankAvailable);
-        connect(robot, &AbstractPlayer::tankDestroyed, this, &Game::tankDestroyed);
-        connect(robot, &AbstractPlayer::fired, this, &Game::tankFired);
-        connect(robot, &AbstractPlayer::moved, this, &Game::moveTank);
-        _robots.append(QSharedPointer<AIPlayer>(robot));
+    foreach (auto &p, _ai->players()) {
+        connectPlayerSignals(p.data());
     }
-    _ai->start();
 
+    _ai->start();
     _clock->start();
 }
 
 void Game::newTankAvailable()
 {
+    qDebug() << "New tank!";
     AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
     auto tank = player->tank();
     if (tank->affinity() == Friendly) {
@@ -133,9 +129,7 @@ void Game::tankFired()
     AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
     auto bullet = player->takeBullet();
     _bullets.prepend(bullet);
-    //if (_board->addDynBlock(bullet)) {
-        emit newBullet(bullet.data());
-    //}
+    emit newBullet(bullet.data());
 }
 
 void Game::moveTank()

@@ -29,7 +29,7 @@ void Tank::setTankDefaults()
     }
 }
 
-QSharedPointer<Bullet> Tank::makeBullet() const
+QSharedPointer<Bullet> Tank::fire()
 {
     auto b = new Bullet(Friendly,
                         isArmorPiercing()?Bullet::ArmorPiercing : Bullet::Regular);
@@ -56,6 +56,7 @@ QSharedPointer<Bullet> Tank::makeBullet() const
 
     b->setInitialPosition(fmr.topLeft());
     b->setDirection(_direction);
+    resetShootClock();
 
     return QSharedPointer<Bullet>(b);
 }

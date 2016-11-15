@@ -43,7 +43,7 @@ public:
     bool isArmorPiercing() const
     { return (_affinity == Friendly) && (_variant == ArmorPiercingTank); }
 
-    QSharedPointer<Bullet> makeBullet() const;
+    QSharedPointer<Bullet> fire();
     void resetShootClock();
 
     OutBoardAction outBoardAction() const;

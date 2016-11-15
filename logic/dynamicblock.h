@@ -28,13 +28,13 @@ public:
     };
 
     /* regarding speeds. we need next
-     * 0 - slowest possible. regular
-     * 1 - fast tank
-     * 2 - bullet
-     * 3 - fast bullet
+     * 0 - fast bullet
+     * 1 - bullet
+     * 2 - fast tank
+     * 3 - slowest possible. regular
      */
 
-    DynamicBlock(quint8 speed = 1, Direction direction = North);
+    DynamicBlock(quint8 speed = 3, Direction direction = North);
     inline void setClockPhase(quint16 phase) { _clockPhase = phase; } // useful for freeze bonus
     virtual void clockTick();
     virtual bool canMove() const;

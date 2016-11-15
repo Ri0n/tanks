@@ -29,8 +29,8 @@ private:
     Game *_game;
     int _playerIndex;
     int _lifes;
-    bool _moving;
     bool _shooting;
+    Direction _oldDirection;
     QLinkedList<Direction> _movingDir;
 };
 

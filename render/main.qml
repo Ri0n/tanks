@@ -6,7 +6,7 @@ Window {
     visible: true
     width: 800
     height: 800
-    title: qsTr("Hello World")
+    title: qsTr("Battle City: The War")
 
 
 	MainForm {

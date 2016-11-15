@@ -6,12 +6,19 @@ namespace Tanks {
 AIPlayer::AIPlayer(AI *ai) :
     _ai(ai)
 {
-    _tank = QSharedPointer<Tank>(new Tank(Alien));
 }
 
 int AIPlayer::lifesCount() const
 {
     return _ai->lifesCount();
 }
+
+void AIPlayer::start()
+{
+    _tank = QSharedPointer<Tank>(new Tank(Alien, _ai->takeTank()));
+    _tank->setInitialPosition(_ai->initialPosition());
+    emit newTankAvailable();
+}
+
 
 } // namespace Tanks

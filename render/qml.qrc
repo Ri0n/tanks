@@ -15,6 +15,7 @@
         <file alias="bullet">img/bullet.png</file>
     </qresource>
     <qresource prefix="/audio">
-        <file alias="fire">audio/fire.flac</file>
+        <file alias="fire_x">audio/fire.flac</file>
+        <file alias="fire">audio/fire2.flac</file>
     </qresource>
 </RCC>

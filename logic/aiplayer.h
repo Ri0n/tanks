@@ -14,6 +14,9 @@ public:
     AIPlayer(AI *ai);
     int lifesCount() const;
 
+    void start();
+
+
 private:
     AI *_ai;
 };

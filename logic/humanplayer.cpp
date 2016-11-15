@@ -10,7 +10,6 @@ HumanPlayer::HumanPlayer(Game *game, int playerIndex) :
     _game(game),
     _playerIndex(playerIndex),
     _lifes(3),
-    _moving(false),
     _shooting(false)
 {
 
@@ -34,8 +33,8 @@ void HumanPlayer::move(Direction dir)
         _movingDir.removeAll(dir);
         _movingDir.prepend(dir);
         if (curDir != dir) {
+            _oldDirection = curDir;
             _tank->setDirection(dir);
-            emit moved(); // just to update orientation
         }
     }
 }
@@ -65,27 +64,30 @@ void HumanPlayer::clockTick()
     if (!_tank) {
         return; // nothing todo w/o tank
     }
+    AbstractPlayer::clockTick();
 
     QRect fmr;
     Board::BlockProps props;
 
     bool shouldMove = !_movingDir.isEmpty() && _tank->canMove();
-    bool shouldShoot = _shooting && _tank->canShoot();
+    bool shouldShoot = (_shooting && _tank->canShoot());
+
     if (shouldMove || shouldShoot) {
         fmr = _tank->forwardMoveRect(); // space before tank it's going to occupy
         props = _game->board()->rectProps(fmr);
     }
 
-    if (shouldMove) {
-        if (props & Board::TankObstackle) {
-            return; // can't move
-        }
+    if (shouldMove && !(props & Board::TankObstackle)) {
         _tank->move();
         emit moved();
+        _oldDirection = _tank->direction();
+    } else if (_oldDirection != _tank->direction() && _tank->canMove()) {
+        emit moved();
+        _oldDirection = _tank->direction();
     }
 
     if (shouldShoot) {
-        _bullet = _tank->makeBullet();
+        _bullet = _tank->fire();
         emit fired();
     }
 }

@@ -11,7 +11,9 @@ DynamicBlock::DynamicBlock(quint8 speed, Direction direction) :
 
 void DynamicBlock::clockTick()
 {
-
+    if (_clockPhase) {
+        _clockPhase--;
+    }
 }
 
 bool DynamicBlock::canMove() const
@@ -38,6 +40,7 @@ void DynamicBlock::move()
         break;
     }
     _geometry.translate(dx, dy);
+    _clockPhase = _speed;
 }
 
 QRect DynamicBlock::forwardMoveRect(int distance) const

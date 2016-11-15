@@ -15,6 +15,18 @@ Rectangle {
 
 	Tanks {
 		id: game
+
+		/* see basics.h
+		North = 0
+		South = 1
+		West  = 2
+		East  = 3
+		----
+		Fire  = 4
+		*/
+		property var p1keys: [Qt.Key_W, Qt.Key_S, Qt.Key_A, Qt.Key_D, Qt.Key_Space]
+		property var p2keys: [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Enter]
+
 		property var tanksList: []
 		property var bulletsList: []
 		property var tanksMap: {}
@@ -54,6 +66,8 @@ Rectangle {
 									'smooth: false\n' +
 									'x: ' + tank.geometry.x + '\n' +
 									'y: ' + tank.geometry.y + '\n' +
+									'Behavior on x { NumberAnimation { duration:150 } }\n' +
+									'Behavior on y { NumberAnimation { duration:150 } }\n' +
 									'z:50 }';
 			console.log("New tank! " + source)
 			var obj = Qt.createQmlObject(source, battleField, "dynamicTank_" + tank.id);
@@ -71,6 +85,8 @@ Rectangle {
 									'smooth: false\n' +
 									'x: ' + bullet.geometry.x + '\n' +
 									'y: ' + bullet.geometry.y + '\n' +
+									'Behavior on x { NumberAnimation { duration:150 } }\n' +
+									'Behavior on y { NumberAnimation { duration:150 } }\n' +
 									'z:50 }';
 			console.log("New bullet! " + source)
 			var obj = Qt.createQmlObject(source, battleField, "dynamicBullet_" + bullet.id);
@@ -98,9 +114,12 @@ Rectangle {
 		}
 
 		onTankUpdated: {
-			game.tanksMap[tank.id].x = tank.geometry.x
-			game.tanksMap[tank.id].y = tank.geometry.y
-			game.tanksMap[tank.id].source = 'image://tankprovider/' + tank.affinity + '/' + tank.variant + '/' + tank.direction + '/0';
+			var old = game.tanksMap[tank.id]
+			old.x = tank.geometry.x
+			old.y = tank.geometry.y
+			old.source = 'image://tankprovider/' + tank.affinity +
+				'/' + tank.variant + '/' + tank.direction + '/' + old.animFrame;
+			old.animFrame = (old.animFrame + 1) % 2;
 		}
 
 		onBlockRemoved: {
@@ -169,89 +188,35 @@ Rectangle {
 	Keys.onPressed: {
 		if(event.isAutoRepeat) return
 
-		/* see basics.h
-		North = 0
-	    South = 1
-	    West  = 2
-	    East  = 3
-		----
-		Fire  = 4
-		*/
-		var isMove = false;
-		var dir = -1
-		var p1keys = [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Space]
-		var p2keys = [Qt.Key_W, Qt.Key_S, Qt.Key_A, Qt.Key_D, Qt.Key_Enter]
-
-		var p1res = p1keys.indexOf(event.key);
+		var p1res = game.p1keys.indexOf(event.key);
 		if (p1res != -1) {
-			console.log("Player 1 action = " + p1res);
 			event.accepted = true;
 			game.qmlTankAction(0, p1res);
 
 		}
 
-		var p2res = p2keys.indexOf(event.key);
+		var p2res = game.p2keys.indexOf(event.key);
 		if (p2res != -1) {
-			console.log("Player 2 action = " + p2res);
 			event.accepted = true;
 			game.qmlTankAction(1, p2res);
 
 		}
-//		if (event.key == Qt.Key_Left) {
-//			console.log("move left");
-//			dir = 2;
-//			event.accepted = true;
-//			myTank.x -= 4
-//			isMove = true
-//		}
-//		if (event.key == Qt.Key_Right) {
-//			console.log("move right");
-//			event.accepted = true;
-//			myTank.x += 4
-//			isMove = true
-//		}
-//		if (event.key == Qt.Key_Up) {
-//			console.log("move up");
-//			event.accepted = true;
-//			myTank.y -= 4
-//			isMove = true
-//		}
-//		if (event.key == Qt.Key_Down) {
-//			console.log("move down");
-//			event.accepted = true;
-//			myTank.y += 4
-//			isMove = true
-//		}
 
-//		if (isMove) {
-//			myTank.animFrame++
-//			myTank.animFrame%=2
-//			console.log("Anim frame:" + myTank.animFrame)
-//			myTank.source = "image://tankprovider/mytank/" + myTank.tankLevel +
-//			                "/" + myTank.animFrame
-//		}
 	}
 
 	Keys.onReleased: {
 		if(event.isAutoRepeat) return
 
-		var p1keys = [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Space]
-		var p2keys = [Qt.Key_W, Qt.Key_S, Qt.Key_A, Qt.Key_D, Qt.Key_Enter]
-
-		var p1res = p1keys.indexOf(event.key);
+		var p1res = game.p1keys.indexOf(event.key);
 		if (p1res != -1) {
-			console.log("Player 1 action = " + p1res);
 			event.accepted = true;
 			game.qmlTankActionStop(0, p1res);
-
 		}
 
-		var p2res = p2keys.indexOf(event.key);
+		var p2res = game.p2keys.indexOf(event.key);
 		if (p2res != -1) {
-			console.log("Player 2 action = " + p2res);
 			event.accepted = true;
 			game.qmlTankActionStop(1, p2res);
-
 		}
 	}
 
