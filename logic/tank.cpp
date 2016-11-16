@@ -82,11 +82,4 @@ void Tank::clockTick()
     DynamicBlock::clockTick();
 }
 
-#if 0 // see comment in header
-bool Tank::canMove() const
-{
-    return _moving && DynamicBlock::canMove();
-}
-#endif
-
 } // namespace Tanks

@@ -96,10 +96,6 @@ void AIPlayer::clockTick()
         }
     }
 
-
-
-
 }
-
 
 } // namespace Tanks

@@ -24,6 +24,10 @@ public:
     inline int index() const { return _playerIndex; }
 
     void clockTick();
+    void catchBullet();
+
+protected:
+    void moveToStart();
 
 private:
     Game *_game;

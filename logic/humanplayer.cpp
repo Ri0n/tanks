@@ -24,7 +24,14 @@ void HumanPlayer::start()
 {
     _tank = QSharedPointer<Tank>(new Tank(Friendly));
 	_oldDirection = _tank->direction();
+	moveToStart();
     emit newTankAvailable();
+}
+
+void HumanPlayer::moveToStart()
+{
+	const auto &posList = _game->board()->friendlyStartPositions();
+    _tank->setInitialPosition(posList[_playerIndex % posList.count()]);
 }
 
 void HumanPlayer::move(Direction dir)
@@ -90,7 +97,18 @@ void HumanPlayer::clockTick()
     if (shouldShoot) {
         _bullet = _tank->fire();
         emit fired();
-    }
+	}
+}
+
+void HumanPlayer::catchBullet()
+{
+	if (_lifes) {
+		_lifes--;
+		moveToStart();
+		emit moved();
+		return;
+	}
+	emit tankDestroyed();
 }
 
 } // namespace Tanks

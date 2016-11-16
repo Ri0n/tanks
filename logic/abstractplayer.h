@@ -18,7 +18,7 @@ public:
     QSharedPointer<Tank> tank() const { return _tank; }
     QSharedPointer<Bullet> takeBullet()
     { QSharedPointer<Bullet> ret; _bullet.swap(ret); return ret; }
-    void catchBullet();
+    virtual void catchBullet();
     virtual void clockTick();
 
 

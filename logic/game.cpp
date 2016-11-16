@@ -150,23 +150,15 @@ void Game::newTankAvailable()
     qDebug() << "New tank!";
     AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
     auto tank = player->tank();
-    if (tank->affinity() == Friendly) {
-        const auto &posList = _d->board->friendlyStartPositions();
-        int playerIndex = static_cast<HumanPlayer*>(player)->index();
-        tank->setInitialPosition(posList[playerIndex % posList.count()]);
-    }
-    //_d->board->addDynBlock(tank);
-
-    //_d->pendingNewTanks.enqueue(tank);
     emit newTank(tank.data()); // let's believe it won't be destroyed and connection is direct
-
 }
 
 void Game::destroyTank()
 {
-    AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
-    if (player) {
-        emit tankDestroyed(player->tank().data());
+    AbstractPlayer *p = qobject_cast<AbstractPlayer *>(sender());
+    if (p) {
+        emit tankDestroyed(p->tank().data());
+        return;
     }
 }
 

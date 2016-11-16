@@ -16,8 +16,6 @@ public:
 
     void start();
     void clockTick();
-
-
 private:
     AI *_ai;
 };

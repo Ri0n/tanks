@@ -34,10 +34,6 @@ public:
     inline quint8 variant() const { return _variant; }
     void setTankDefaults();
 
-#if 0 // use less. just change clock count to freeze
-    bool canMove() const; /* if we can move by timer and own will. */
-    inline void setMoving(bool state) { _moving = state; } /* willing to move */
-#endif
     inline bool canShoot() const { return _shootTicks == 0; }
 
     bool isArmorPiercing() const
