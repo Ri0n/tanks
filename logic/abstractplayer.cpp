@@ -16,7 +16,8 @@ void AbstractPlayer::clockTick()
 
 void AbstractPlayer::catchBullet()
 {
-     // todo
+    emit tankDestroyed();
+    _tank.clear();
 }
 
 } // namespace Tanks

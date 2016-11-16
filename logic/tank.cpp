@@ -31,7 +31,7 @@ void Tank::setTankDefaults()
 
 QSharedPointer<Bullet> Tank::fire()
 {
-    auto b = new Bullet(Friendly,
+    auto b = new Bullet(_affinity,
                         isArmorPiercing()?Bullet::ArmorPiercing : Bullet::Regular);
     b->setSpeed(_affinity == Alien && _variant == FastBulletTank ? 3 : 2);
 

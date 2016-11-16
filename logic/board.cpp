@@ -22,7 +22,7 @@ bool Board::loadMap(AbstractMapLoader *loader)
     if (!loader->open()) {
         return false;
     }
-    _dynBlocks.clear();
+    //_dynBlocks.clear();
     _size = loader->dimensions() * MAP_SCALE_FACTOR;
     _size.boundedTo(QSize(1024,1024));
     QRect boardRect(QPoint(0,0), _size);
@@ -87,56 +87,56 @@ int Board::blockDivider() const
     return MAP_SCALE_FACTOR;
 }
 
-bool Board::addDynBlock(QSharedPointer<DynamicBlock> dblock)
-{
-    QRect board(QPoint(0,0), _size);
-    if (!board.contains(dblock->geometry())) {
-        return false; // it's initially possible only for bullets.
-    }
+//bool Board::addDynBlock(QSharedPointer<DynamicBlock> dblock)
+//{
+//    QRect board(QPoint(0,0), _size);
+//    if (!board.contains(dblock->geometry())) {
+//        return false; // it's initially possible only for bullets.
+//    }
 
-    _dynBlocks.append(dblock);
-    // Do we need to do aything else here?
-    return true;
-}
+//    _dynBlocks.append(dblock);
+//    // Do we need to do aything else here?
+//    return true;
+//}
 
-void Board::clockTick()
-{
-    auto it = _dynBlocks.begin();
-    while (it != _dynBlocks.end()) {
-        QSharedPointer<DynamicBlock> b = *it;
-        if (b->canMove()) {
-            QRect fmr = b->forwardMoveRect(); // space before tank it's going to occupy
-            BlockProps props = rectProps(fmr);
-            QSharedPointer<Tank> tank = b.dynamicCast<Tank>();
-            if (tank && props & TankObstackle) {
-                continue; // can't move
-// next code should be used only for CompPlayer
-//                DynamicBlock::ForwardHints hint = DynamicBlock::ForwardNothing;
-//                if (props & TankObstackle) {
-//                    bool canBreak = (props & Breakable) && ((props & Sturdy) || tank->isArmorPiercing());
-//                    hint |= (canBreak? DynamicBlock::ForwardBreakable : DynamicBlock::ForwardBlock);
+//void Board::clockTick()
+//{
+//    auto it = _dynBlocks.begin();
+//    while (it != _dynBlocks.end()) {
+//        QSharedPointer<DynamicBlock> b = *it;
+//        if (b->canMove()) {
+//            QRect fmr = b->forwardMoveRect(); // space before tank it's going to occupy
+//            BlockProps props = rectProps(fmr);
+//            QSharedPointer<Tank> tank = b.dynamicCast<Tank>();
+//            if (tank && props & TankObstackle) {
+//                continue; // can't move
+//// next code should be used only for CompPlayer
+////                DynamicBlock::ForwardHints hint = DynamicBlock::ForwardNothing;
+////                if (props & TankObstackle) {
+////                    bool canBreak = (props & Breakable) && ((props & Sturdy) || tank->isArmorPiercing());
+////                    hint |= (canBreak? DynamicBlock::ForwardBreakable : DynamicBlock::ForwardBlock);
+////                }
+//            }
+
+//            //tank->move();
+
+//            if (tank && (props & (Dangerous | Explosive))) {
+//                // These types of map block unsupported yet. may be mines in the future
+//                continue;
+//            }
+
+//            auto cmpIt = it + 1;
+//            while (cmpIt != _dynBlocks.end()) {
+//                if (b->hasClash(**cmpIt)) { // dered iterator and deref smart pointer
+
 //                }
-            }
+//                ++cmpIt;
+//            }
 
-            //tank->move();
-
-            if (tank && (props & (Dangerous | Explosive))) {
-                // These types of map block unsupported yet. may be mines in the future
-                continue;
-            }
-
-            auto cmpIt = it + 1;
-            while (cmpIt != _dynBlocks.end()) {
-                if (b->hasClash(**cmpIt)) { // dered iterator and deref smart pointer
-
-                }
-                ++cmpIt;
-            }
-
-        }
-        ++it;
-    }
-}
+//        }
+//        ++it;
+//    }
+//}
 
 Board::BlockProps Board::rectProps(const QRect &rect)
 {

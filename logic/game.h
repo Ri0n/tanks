@@ -31,6 +31,7 @@ signals:
     void newTank(QObject*);
     void newBullet(QObject*);
     void tankMoved(QObject*);
+    void tankDestroyed(QObject*);
     void bulletRemoved(QObject*);
     void bulletMoved(QObject*);
     void blockRemoved(QRect);
@@ -48,7 +49,7 @@ private slots:
     void clockTick();
 
     void newTankAvailable();
-    void tankDestroyed();
+    void destroyTank();
     void tankFired();
     void moveTank();
 private:

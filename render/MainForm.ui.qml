@@ -79,7 +79,7 @@ Rectangle {
 									'Behavior on x { NumberAnimation { duration:150 } }\n' +
 									'Behavior on y { NumberAnimation { duration:150 } }\n' +
 									'z:50 }';
-			console.log("New tank! " + source)
+			//console.log("New tank! " + source)
 			var obj = Qt.createQmlObject(source, battleField, "dynamicTank_" + tank.id);
 			game.tanksMap[tank.id] = obj;
 			game.tanksList.push(obj)
@@ -98,7 +98,7 @@ Rectangle {
 									'Behavior on x { NumberAnimation { duration:150 } }\n' +
 									'Behavior on y { NumberAnimation { duration:150 } }\n' +
 									'z:50 }';
-			console.log("New bullet! " + source)
+			//console.log("New bullet! " + source)
 			var obj = Qt.createQmlObject(source, battleField, "dynamicBullet_" + bullet.id);
 			game.bulletsMap[bullet.id] = obj;
 			game.bulletsList.push(obj)
@@ -130,6 +130,15 @@ Rectangle {
 			old.source = 'image://tankprovider/' + tank.affinity +
 				'/' + tank.variant + '/' + tank.direction + '/' + old.animFrame;
 			old.animFrame = (old.animFrame + 1) % 2;
+		}
+
+		onTankDestroyed: {
+			var t = game.tanksMap[id]
+			console.log("Tank destroy center:"+t.rect)
+			var index = game.tanksList.indexOf(t);
+			game.tanksList.splice(index,1)
+			t.destroy()
+			delete game.tanksMap[id]
 		}
 
 		onBlockRemoved: {

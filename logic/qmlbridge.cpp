@@ -30,6 +30,7 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     connect(_game, &Game::newTank, this, &QMLBridge::newTankAvailable);
     connect(_game, &Game::newBullet, this, &QMLBridge::newBulletAvailable);
     connect(_game, &Game::tankMoved, this, &QMLBridge::moveTank);
+    connect(_game, &Game::tankDestroyed, this, &QMLBridge::destroyTank);
     connect(_game, &Game::blockRemoved, this, &QMLBridge::removeBlock);
     connect(_game, &Game::bulletRemoved, this, &QMLBridge::removeBullet);
     connect(_game, &Game::bulletMoved, this, &QMLBridge::moveBullet);
@@ -161,10 +162,15 @@ void QMLBridge::moveTank(QObject *obj)
     emit tankUpdated(tank2variant(tank));
 }
 
+void QMLBridge::destroyTank(QObject *obj)
+{
+    emit tankDestroyed(obj->property("qmlid").toString());
+}
+
 void QMLBridge::moveBullet(QObject *obj)
 {
     auto bullet = qobject_cast<Bullet*>(obj);
-    qDebug() << "New position: " << bullet->geometry().topLeft() * minBlockSize;
+    //qDebug() << "New position: " << bullet->geometry().topLeft() * minBlockSize;
     emit bulletMoved(bullet->property("qmlid").toString(),
                     bullet->geometry().topLeft() * minBlockSize);
 }

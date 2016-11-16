@@ -23,6 +23,7 @@ int HumanPlayer::lifesCount() const
 void HumanPlayer::start()
 {
     _tank = QSharedPointer<Tank>(new Tank(Friendly));
+	_oldDirection = _tank->direction();
     emit newTankAvailable();
 }
 

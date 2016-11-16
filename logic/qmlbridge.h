@@ -36,12 +36,16 @@ private:
 
 signals:
     void mapRendered();
-    void newTank(QVariant tank);
-    void newBullet(QVariant bullet);
-    void tankUpdated(QVariant tank);
     void blockRemoved(QRect block);
+
+    void newTank(QVariant tank);
+    void tankUpdated(QVariant tank);
+    void tankDestroyed(QString id);
+
+    void newBullet(QVariant bullet);
     void bulletMoved(QString id, QPoint pos);
     void bulletRemoved(QString id);
+
     void flagChanged();
 
     void qmlTankAction(int player, int key);
@@ -61,6 +65,7 @@ private slots:
     void removeBlock(const QRect &r);
     void moveBullet(QObject *obj);
     void removeBullet(QObject *obj);
+    void destroyTank(QObject *obj);
 private:
     QTemporaryDir _tmpDir;
     Game *_game;

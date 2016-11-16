@@ -31,7 +31,6 @@ public:
     AI *ai;
 
     QList<QSharedPointer<HumanPlayer>> humans;
-    QList<QSharedPointer<AIPlayer>> robots;
     QLinkedList<QSharedPointer<Bullet>> bullets;
 
     QQueue<QSharedPointer<Tank>> pendingNewTanks;
@@ -55,6 +54,9 @@ Game::Game(QObject *parent) : QObject(parent),
 Game::~Game()
 {
     delete _d->mapLoader;
+    _d->humans.clear();
+    _d->bullets.clear();
+    delete _d;
 }
 
 Board *Game::board() const
@@ -75,7 +77,7 @@ QSharedPointer<Flag> &Game::flag() const
 void Game::connectPlayerSignals(AbstractPlayer *player)
 {
     connect(player, &AbstractPlayer::newTankAvailable, this, &Game::newTankAvailable);
-    connect(player, &AbstractPlayer::tankDestroyed, this, &Game::tankDestroyed);
+    connect(player, &AbstractPlayer::tankDestroyed, this, &Game::destroyTank);
     connect(player, &AbstractPlayer::fired, this, &Game::tankFired);
     connect(player, &AbstractPlayer::moved, this, &Game::moveTank);
 }
@@ -119,7 +121,6 @@ void Game::start()
         return;
     }
     _d->humans.clear();
-    _d->robots.clear();
     QTimer::singleShot(0, this, &Game::mapReady);
 }
 
@@ -154,16 +155,19 @@ void Game::newTankAvailable()
         int playerIndex = static_cast<HumanPlayer*>(player)->index();
         tank->setInitialPosition(posList[playerIndex % posList.count()]);
     }
-    _d->board->addDynBlock(tank);
+    //_d->board->addDynBlock(tank);
 
     //_d->pendingNewTanks.enqueue(tank);
     emit newTank(tank.data()); // let's believe it won't be destroyed and connection is direct
 
 }
 
-void Game::tankDestroyed()
+void Game::destroyTank()
 {
-    // todo
+    AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
+    if (player) {
+        emit tankDestroyed(player->tank().data());
+    }
 }
 
 void Game::tankFired()
@@ -202,12 +206,11 @@ void Game::clockTick()
                 }
             }
         } else {
-            foreach (auto p, _d->robots) {
-                if (p->tank() && p->tank()->hasClash(*bullet)) {
-                    p->catchBullet();
-                    clashFound = true;
-                    break;
-                }
+            QSharedPointer<AIPlayer> p = _d->ai->findClash(bullet.dynamicCast<Block>());
+            if (p) {
+                p->catchBullet();
+                clashFound = true;
+                break;
             }
         }
         if (_d->flag->hasClash(*bullet)) {

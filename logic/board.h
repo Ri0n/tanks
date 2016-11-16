@@ -84,7 +84,7 @@ public:
     inline const QSize &size() const { return _size; }
     int blockDivider() const;
 
-    bool addDynBlock(QSharedPointer<DynamicBlock> dblock);
+    //bool addDynBlock(QSharedPointer<DynamicBlock> dblock);
     void clockTick();
 
     inline const QList<quint8> &initialEnemyTanks() const
@@ -105,7 +105,7 @@ public slots:
 private:
     QSize _size;
     QVector<MapItem> _map;
-    QLinkedList<QSharedPointer<DynamicBlock>> _dynBlocks;
+    //QLinkedList<QSharedPointer<DynamicBlock>> _dynBlocks;
     QList<quint8> _initialEnemyTanks;
     QList<QPoint> _enemyStartPositions;
     QList<QPoint> _friendlyStartPositions;

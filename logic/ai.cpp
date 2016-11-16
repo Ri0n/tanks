@@ -16,6 +16,12 @@ AI::AI(Game *game) : QObject(game),
     }
 }
 
+AI::~AI()
+{
+    _activePlayers.clear();
+    _inactivePlayers.clear();
+}
+
 void AI::start()
 {
     _tanks = _game->board()->initialEnemyTanks();
@@ -31,6 +37,16 @@ QList<QSharedPointer<AIPlayer> > AI::players() const
         ret.append(p);
     }
     return ret;
+}
+
+QSharedPointer<AIPlayer> AI::findClash(const QSharedPointer<Block> &block)
+{
+    foreach (auto p, _activePlayers) {
+        if (p->tank() && p->tank()->hasClash(*block)) {
+            return p;
+        }
+    }
+    return QSharedPointer<AIPlayer>();
 }
 
 QPoint AI::initialPosition() const
@@ -65,6 +81,7 @@ void AI::deactivatePlayer()
             _activePlayers.erase(it);
             break;
         }
+        ++it;
     }
 }
 
