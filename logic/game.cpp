@@ -33,7 +33,6 @@ public:
     QList<QSharedPointer<HumanPlayer>> humans;
     QLinkedList<QSharedPointer<Bullet>> bullets;
 
-    QQueue<QSharedPointer<Tank>> pendingNewTanks;
     QSharedPointer<Flag> flag;
 };
 
@@ -49,14 +48,23 @@ Game::Game(QObject *parent) : QObject(parent),
     _d->clock = new QTimer(this);
     _d->clock->setInterval(50);
     connect(_d->clock, &QTimer::timeout, this, &Game::clockTick);
+    connect(_d->ai, &AI::newPlayer, this, &Game::connectPlayerSignals);
 }
 
 Game::~Game()
 {
+    reset();
     delete _d->mapLoader;
+    delete _d;
+}
+
+void Game::reset()
+{
+    _d->clock->stop();
     _d->humans.clear();
     _d->bullets.clear();
-    delete _d;
+    _d->ai->reset();
+    //_d->board->reset();
 }
 
 Board *Game::board() const
@@ -116,11 +124,11 @@ void Game::playerStopFireRequested(int playerNum)
 
 void Game::start()
 {
+    reset();
     if (!_d->board->loadMap(_d->mapLoader)) {
         qDebug("Failed to load  map");
         return;
     }
-    _d->humans.clear();
     QTimer::singleShot(0, this, &Game::mapReady);
 }
 
@@ -135,10 +143,6 @@ void Game::mapReady()
         connectPlayerSignals(human);
         _d->humans.append(QSharedPointer<HumanPlayer>(human));
         human->start();
-    }
-
-    foreach (auto &p, _d->ai->players()) {
-        connectPlayerSignals(p.data());
     }
 
     _d->ai->start();
@@ -196,6 +200,7 @@ void Game::moveBullets()
         auto bullet = *it;
 
         bool clashFound = false;
+        Bullet::ExplosionType explType = Bullet::Explosion;
         if (bullet->affinity() == Alien) {
             foreach (auto p, _d->humans) {
                 if (p->tank() && p->tank()->hasClash(*bullet)) {
@@ -209,17 +214,33 @@ void Game::moveBullets()
             if (p) {
                 p->catchBullet();
                 clashFound = true;
-                break;
             }
         }
-        if (_d->flag->hasClash(*bullet)) {
+        if (!clashFound && _d->flag->hasClash(*bullet)) {
             clashFound = true;
             _d->flag->burn();
+            explType = Bullet::BigExplosion;
             emit flagLost();
+        }
+        if (!clashFound) {
+            // meet other bullets
+            auto it2 = it + 1;
+            Affinity invAff = bullet->affinity() == Alien? Friendly : Alien;
+            while (it2 != _d->bullets.end()) {
+                auto &b2 = **it2;
+                if (b2.affinity() == invAff && b2.hasClash(*bullet)) {
+                    explType = Bullet::BrickDestroyed;
+                    b2.explode(explType); // let's imagine tank shoot with bricks / FIXME
+                    _d->bullets.erase(it2);
+                    clashFound = true;
+                    break;
+                }
+                ++it2;
+            }
         }
         if (clashFound) {
             it = _d->bullets.erase(it);
-            emit bulletRemoved(bullet.data());
+            bullet->explode(explType);
         } else {
             QRect fmr = bullet->forwardMoveRect();
             //qDebug() << "Bullet forward" << fmr;
@@ -234,6 +255,7 @@ void Game::moveBullets()
                     fmr.setHeight(4);
                     fmr.translate(0, -1);
                 }
+                bool brickDamage = false;
                 for (int i = 0; i < fmr.width(); i++) {
                     for (int j = 0; j < fmr.height(); j++) {
                         QPoint p(fmr.left() + i, fmr.top() + j);
@@ -243,19 +265,20 @@ void Game::moveBullets()
                                 QRect r(p, QSize(1,1));
                                 _d->board->renderBlock(Nothing, r);
                                 emit blockRemoved(r);
+                                brickDamage = true;
                             }
                         }
                     }
                 }
                 it = _d->bullets.erase(it);
-                qDebug("Remove!!!");
-                emit bulletRemoved(bullet.data());
+                //qDebug("Remove!!!");
+                bullet->explode(brickDamage? Bullet::BrickDestroyed : Bullet::NoDamage);
             } else {
                 if (bullet->canMove()) {
                     bullet->move();
                     if (!QRect(QPoint(0,0), _d->board->size()).contains(bullet->geometry())) {
                         it = _d->bullets.erase(it);
-                        emit bulletRemoved(bullet.data());
+                        bullet->explode(Bullet::NoDamage);
                         continue;
                     }
                     emit bulletMoved(bullet.data());

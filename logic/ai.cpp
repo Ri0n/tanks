@@ -9,34 +9,30 @@ AI::AI(Game *game) : QObject(game),
     _game(game),
     _activateClock(0)
 {
-    for (int i = 0; i < 4; i++) { // we want 4 tanks at once on the map
-        auto robot = QSharedPointer<AIPlayer>(new AIPlayer(this));
-        _inactivePlayers.append(robot);
-        connect(robot.data(), &AIPlayer::tankDestroyed, this, &AI::deactivatePlayer);
-    }
+
 }
 
 AI::~AI()
 {
+    reset();
+}
+
+void AI::reset()
+{
     _activePlayers.clear();
     _inactivePlayers.clear();
+    _tanks.clear();
 }
 
 void AI::start()
 {
     _tanks = _game->board()->initialEnemyTanks();
-}
-
-QList<QSharedPointer<AIPlayer> > AI::players() const
-{
-    QList<QSharedPointer<AIPlayer>> ret;
-    for (auto &p: _activePlayers) {
-        ret.append(p);
+    for (int i = 0; i < 4; i++) { // we want 4 tanks at once on the map
+        auto robot = QSharedPointer<AIPlayer>(new AIPlayer(this));
+        emit newPlayer(robot.data());
+        _inactivePlayers.append(robot);
+        connect(robot.data(), &AIPlayer::tankDestroyed, this, &AI::deactivatePlayer);
     }
-    for (auto &p: _inactivePlayers) {
-        ret.append(p);
-    }
-    return ret;
 }
 
 QSharedPointer<AIPlayer> AI::findClash(const QSharedPointer<Block> &block)

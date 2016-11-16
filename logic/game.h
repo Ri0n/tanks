@@ -23,8 +23,8 @@ public:
     QSharedPointer<Flag> &flag() const;
 
 private:
-    void connectPlayerSignals(AbstractPlayer *player);
     void moveBullets();
+    void reset();
 
 signals:
     void mapLoaded();
@@ -46,6 +46,7 @@ public slots:
     void playerStopMoveRequested(int playerNum, int direction);
     void playerStopFireRequested(int playerNum);
 private slots:
+    void connectPlayerSignals(AbstractPlayer *player);
     void mapReady();
     void clockTick();
 

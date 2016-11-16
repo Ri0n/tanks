@@ -13,9 +13,14 @@
         <file alias="brick">img/brick.png</file>
         <file alias="tanks">img/tanks.png</file>
         <file alias="bullet">img/bullet.png</file>
+        <file alias="explosion1">img/explosion1.png</file>
+        <file>img/explosion2.png</file>
     </qresource>
     <qresource prefix="/audio">
-        <file alias="fire_x">audio/fire.flac</file>
-        <file alias="fire">audio/fire2.flac</file>
+        <file alias="shot">audio/shot.wav</file>
+        <file alias="expl-tank">audio/expl-tank.wav</file>
+        <file alias="expl-flag">audio/expl-flag.wav</file>
+        <file alias="expl-brick">audio/expl-bricks.wav</file>
+        <file alias="expl-nodamage">audio/expl-nodamage.wav</file>
     </qresource>
 </RCC>

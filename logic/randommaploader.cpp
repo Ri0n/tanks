@@ -17,7 +17,11 @@ RandomMapLoader::RandomMapLoader() :
 bool RandomMapLoader::open()
 {
     int i;
-    for (i = 0; i < 40; i++) {
+
+    shapesQueue.clear();
+    objectQueue.clear();
+
+    for (i = 0; i < 20; i++) {
         // draw bricks
         shapesQueue.enqueue({Brick, 4, 20});
     }

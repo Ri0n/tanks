@@ -10,6 +10,12 @@ Bullet::Bullet(Affinity affinity, Level level) :
     _geometry.setHeight(2);
 }
 
+void Bullet::explode(Bullet::ExplosionType et)
+{
+    _etype = et;
+    emit detonated();
+}
+
 DynamicBlock::OutBoardAction Bullet::outBoardAction() const
 {
     return DynamicBlock::Disappear;

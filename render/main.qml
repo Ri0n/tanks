@@ -4,16 +4,13 @@ import QtQuick.Window 2.2
 
 Window {
     visible: true
-    width: 800
+    width: 900
     height: 800
     title: qsTr("Battle City: The War")
 
 
 	MainForm {
 		anchors.fill: parent
-//		mouseArea.onClicked: {
-//			Qt.quit();
-//		}
 	}
 
 }

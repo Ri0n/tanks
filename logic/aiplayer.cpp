@@ -48,28 +48,32 @@ void AIPlayer::clockTick()
 
         Direction oldDir = _tank->direction();
         if (needNewDir) {
-            QPoint tc = _tank->geometry().center();
-            QPoint fc = _ai->game()->flag()->geometry().center();
-            Direction dirs[4]; // first directions are more probable (towards the flag)
-            if (tc.x() < fc.x()) {
-                dirs[0] = East;
-                dirs[2] = West;
+            if (_ai->game()->flag()->isBroken()) {
+                _tank->setDirection((Direction)(qrand() % 4));
             } else {
-                dirs[0] = West;
-                dirs[2] = East;
-            }
-            if (tc.y() < fc.y()) {
-                dirs[1] = South;
-                dirs[3] = North;
-            } else {
-                dirs[1] = North;
-                dirs[3] = South;
-            }
+                QPoint tc = _tank->geometry().center();
+                QPoint fc = _ai->game()->flag()->geometry().center();
+                Direction dirs[4]; // first directions are more probable (towards the flag)
+                if (tc.x() < fc.x()) {
+                    dirs[0] = East;
+                    dirs[2] = West;
+                } else {
+                    dirs[0] = West;
+                    dirs[2] = East;
+                }
+                if (tc.y() < fc.y()) {
+                    dirs[1] = South;
+                    dirs[3] = North;
+                } else {
+                    dirs[1] = North;
+                    dirs[3] = South;
+                }
 
-            int toFlagInd = qrand() < (RAND_MAX * 0.85)? 0 : 2;
-            Direction newDir = dirs[toFlagInd + (d & 1)];
+                int toFlagInd = qrand() < (RAND_MAX * 0.9)? 0 : 2;
+                Direction newDir = dirs[toFlagInd + (d & 1)];
 
-            _tank->setDirection(newDir);
+                _tank->setDirection(newDir);
+            }
             props = _ai->game()->board()->rectProps(_tank->forwardMoveRect());
             canMoveForward = !(props & Board::TankObstackle);
         }

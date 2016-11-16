@@ -44,7 +44,7 @@ signals:
 
     void newBullet(QVariant bullet);
     void bulletMoved(QString id, QPoint pos);
-    void bulletRemoved(QString id);
+    void bulletDetonated(QString id, int reason);
 
     void flagChanged();
 
@@ -52,6 +52,7 @@ signals:
     void qmlTankActionStop(int player, int key);
 
 public slots:
+    void restart();
 
 private slots:
     void humanTankAction(int player, int key);
@@ -64,8 +65,8 @@ private slots:
     void moveTank(QObject *obj);
     void removeBlock(const QRect &r);
     void moveBullet(QObject *obj);
-    void removeBullet(QObject *obj);
     void destroyTank(QObject *obj);
+    void detonateBullet();
 private:
     QTemporaryDir _tmpDir;
     Game *_game;

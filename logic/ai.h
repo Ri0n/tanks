@@ -16,11 +16,11 @@ class AI : public QObject
 public:
     explicit AI(Game *game = 0);
     ~AI();
+    void reset();
     inline Game *game() const { return _game; }
     inline int lifesCount() const { return _tanks.count(); }
     inline quint8 takeTank() { return _tanks.takeFirst(); }
     void start();
-    QList<QSharedPointer<AIPlayer>> players() const;
     QSharedPointer<AIPlayer> findClash(const QSharedPointer<Block> &block);
 
     QPoint initialPosition() const;
@@ -28,6 +28,7 @@ public:
     void clockTick();
 
 signals:
+    void newPlayer(AIPlayer*);
 
 public slots:
 

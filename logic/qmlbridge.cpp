@@ -32,7 +32,6 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     connect(_game, &Game::tankMoved, this, &QMLBridge::moveTank);
     connect(_game, &Game::tankDestroyed, this, &QMLBridge::destroyTank);
     connect(_game, &Game::blockRemoved, this, &QMLBridge::removeBlock);
-    connect(_game, &Game::bulletRemoved, this, &QMLBridge::removeBullet);
     connect(_game, &Game::bulletMoved, this, &QMLBridge::moveBullet);
     connect(_game, &Game::flagLost, this, &QMLBridge::flagChanged);
     //connect(_game, &Game::playerRestarted, this, &QMLBridge::playerRestarted)
@@ -102,9 +101,11 @@ void QMLBridge::mapLoaded()
     }
 
     QImage lowerLayer(_game->board()->size() * minBlockSize, QImage::Format_ARGB32);
+    lowerLayer.fill(0);
     QPainter lowerPainter(&lowerLayer);
 
     QImage bushLayer(_game->board()->size() * minBlockSize, QImage::Format_ARGB32);
+    bushLayer.fill(0);
     QPainter bushPainter(&bushLayer);
 
     Board::Iterator it = _game->board()->iterate();
@@ -153,6 +154,8 @@ void QMLBridge::newBulletAvailable(QObject *obj)
     QRect geom = bullet->geometry();
     vb["geometry"] = QRect(geom.topLeft() * minBlockSize,
                               geom.size() * minBlockSize);
+
+    connect(bullet, &Bullet::detonated, this, &QMLBridge::detonateBullet);
     emit newBullet(vb);
 }
 
@@ -175,10 +178,10 @@ void QMLBridge::moveBullet(QObject *obj)
                     bullet->geometry().topLeft() * minBlockSize);
 }
 
-void QMLBridge::removeBullet(QObject *obj)
+void QMLBridge::detonateBullet()
 {
-    auto bullet = qobject_cast<Bullet*>(obj);
-    emit bulletRemoved(bullet->property("qmlid").toString());
+    auto bullet = qobject_cast<Bullet*>(sender());
+    emit bulletDetonated(bullet->property("qmlid").toString(), (int)bullet->explosionType());
 }
 
 QVariant QMLBridge::tank2variant(Tank *tank)
@@ -192,6 +195,11 @@ QVariant QMLBridge::tank2variant(Tank *tank)
     vtank["geometry"] = QRect(tankGeom.topLeft() * minBlockSize,
                               tankGeom.size() * minBlockSize);
     return vtank;
+}
+
+void QMLBridge::restart()
+{
+    _game->start();
 }
 
 void QMLBridge::removeBlock(const QRect &r)
