@@ -24,6 +24,7 @@ public:
 
 private:
     void connectPlayerSignals(AbstractPlayer *player);
+    void moveBullets();
 
 signals:
     void mapLoaded();

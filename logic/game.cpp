@@ -184,6 +184,13 @@ void Game::clockTick()
     }
     _d->ai->clockTick();
 
+    for (int bMove = 0; bMove < 2; bMove++) {
+        moveBullets();
+    }
+}
+
+void Game::moveBullets()
+{
     auto it = _d->bullets.begin();
     while (it != _d->bullets.end()) {
         auto bullet = *it;
