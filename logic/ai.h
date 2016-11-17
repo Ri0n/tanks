@@ -18,7 +18,8 @@ public:
     ~AI();
     void reset();
     inline Game *game() const { return _game; }
-    inline int lifesCount() const { return _tanks.count(); }
+    inline int pendingTanks() const { return _tanks.count(); }
+    inline int lifesCount() const { return _tanks.count() + _activePlayers.count(); }
     inline quint8 takeTank() { return _tanks.takeFirst(); }
     void start();
     QSharedPointer<AIPlayer> findClash(const QSharedPointer<Block> &block);

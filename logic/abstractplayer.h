@@ -29,6 +29,7 @@ signals:
     void tankMoved();
     void moved();
     void fired();
+    void lifeLost();
 
 public slots:
 

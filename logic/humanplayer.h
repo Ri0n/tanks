@@ -25,6 +25,7 @@ public:
 
     void clockTick();
     void catchBullet();
+    void killAll();
 
 protected:
     void moveToStart();

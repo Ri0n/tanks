@@ -19,8 +19,12 @@ public:
     explicit Game(QObject *parent = 0);
     ~Game();
     Board *board() const;
-    void setPlayersCount(int n);
     QSharedPointer<Flag> &flag() const;
+
+    void setPlayersCount(int n);
+    int playersCount();
+    int aiLifes();
+    int playerLifes(int playerId);
 
 private:
     void moveBullets();
@@ -37,6 +41,7 @@ signals:
     void bulletMoved(QObject*);
     void blockRemoved(QRect);
     void flagLost();
+    void statsChanged();
 
 public slots:
     void playerMoveRequested(int playerNum, int direction);

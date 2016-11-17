@@ -15,7 +15,7 @@ AIPlayer::AIPlayer(AI *ai) :
 
 int AIPlayer::lifesCount() const
 {
-    return _ai->lifesCount();
+    return _ai->pendingTanks();
 }
 
 void AIPlayer::start()

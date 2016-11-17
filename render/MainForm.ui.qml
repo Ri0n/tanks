@@ -76,15 +76,15 @@ Rectangle {
 
 			game.pendingBlockRemove = []
 			lowerLayer.lowerRendered = false
-			lowerLayer.lowerImage = "file://" + game.mapImageFilename
+			lowerLayer.lowerMapImage = "image://mapprovider/" + game.bridgeId + "/map"
 
-			if (lowerLayer.isImageLoaded(lowerLayer.lowerImage) ||
-			    lowerLayer.isImageLoading(lowerLayer.lowerImage))
-				lowerLayer.unloadImage(lowerLayer.lowerImage)
+			if (lowerLayer.isImageLoaded(lowerLayer.lowerMapImage) ||
+			    lowerLayer.isImageLoading(lowerLayer.lowerMapImage))
+				lowerLayer.unloadImage(lowerLayer.lowerMapImage)
 
-			lowerLayer.loadImage(lowerLayer.lowerImage)
+			lowerLayer.loadImage(lowerLayer.lowerMapImage)
 			bushLayer.source = ""
-			bushLayer.source = "file://" + game.bushImageFilename
+			bushLayer.source = "image://mapprovider/" + game.bridgeId + "/bush"
 
 			var g = game.flagGeometry
 			flag.x = g.x
@@ -155,7 +155,6 @@ Rectangle {
 					game.playSound("expl-brick", id);
 					break;
 				case 2: // tank
-					console.log("Expl tank!")
 					game.playSound("expl-tank", id);
 					break;
 				case 3: // flag
@@ -204,13 +203,11 @@ Rectangle {
 		canvasWindow  : Qt.rect(0, 0, game.boardImageSize.width, game.boardImageSize.height)
 		tileSize : Qt.size(100, 100)
 
-		property string lowerImage: ""
+		property string lowerMapImage: ""
 		property bool lowerRendered: false
 
 		onImageLoaded : {
-			if (lowerLayer.lowerImage) {
-				console.log("Image loaded: " + lowerLayer.lowerImage);
-				console.log(game.boardImageSize)
+			if (lowerLayer.lowerMapImage) {
 				battleField.width = game.boardImageSize.width;
 				battleField.height = game.boardImageSize.height;
 				requestPaint();
@@ -219,14 +216,14 @@ Rectangle {
 
 		onPaint: {
 			//console.log("Render");
-			if (!lowerLayer.lowerRendered && lowerLayer.lowerImage &&
-			     lowerLayer.isImageLoaded(lowerLayer.lowerImage))
+			if (!lowerLayer.lowerRendered && lowerLayer.lowerMapImage &&
+			     lowerLayer.isImageLoaded(lowerLayer.lowerMapImage))
 		    {
 				var ctx = getContext("2d")
 				ctx.reset();
 				ctx.fillStyle = "black"
 				ctx.fillRect(0,0,lowerLayer.canvasSize.width, lowerLayer.canvasSize.height )
-				ctx.drawImage(lowerLayer.lowerImage, 0,0)
+				ctx.drawImage(lowerLayer.lowerMapImage, 0,0)
 				lowerLayer.lowerRendered = true
 			}
 			if (game.pendingBlockRemove.length) {
@@ -240,8 +237,6 @@ Rectangle {
 					ctx.fillRect(b.x, b.y, b.width, b.height)
 				}
 				game.pendingBlockRemove = []
-			} else {
-			    console.log("No pending remove");
 			}
 		}
 	}
@@ -299,11 +294,13 @@ Rectangle {
 
 	Column {
 		anchors.fill: parent
+		spacing: 5
+		padding: 5
 
 
 		Rectangle {
 			height: 30
-			width: parent.width
+			width: parent.width - 10
 			color: '#008800'
 
 
@@ -322,6 +319,17 @@ Rectangle {
 				onClicked: game.restart();
 			}
 		}
+
+		Text {
+			height: 30
+			text: game.lifesStat
+			font.pointSize: 12
+			color: "white"
+			horizontalAlignment: Text.AlignHLeft
+			verticalAlignment: Text.AlignVCenter
+		}
+
+
 	}
 }
 

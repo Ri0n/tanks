@@ -9,6 +9,7 @@
 #include "abstractmaploader.h"
 #include "tank.h"
 #include "flag.h"
+#include "qmlmapimageprovider.h"
 
 
 namespace Tanks {
@@ -16,14 +17,9 @@ namespace Tanks {
 static int minBlockSize = 8; // 4px. minimal breakable part or minimal move
 
 QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
-  _tmpDir(QStandardPaths::writableLocation(QStandardPaths::TempLocation)+"/tanksXXXXXX"),
   _qmlId(0)
 {
-    _tmpDir.setAutoRemove(true);
-    QDir d(_tmpDir.path());
-    _lowerFilename = d.filePath("lower.png");
-    _bushFilename = d.filePath("bush.png");
-    qDebug() << "Lower map filename: " << _lowerFilename;
+    QMLMapImageProvider::registerBridge(this);
 
     _game = new Game(this);
     connect(_game, &Game::mapLoaded, this, &QMLBridge::mapLoaded);
@@ -34,6 +30,7 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     connect(_game, &Game::blockRemoved, this, &QMLBridge::removeBlock);
     connect(_game, &Game::bulletMoved, this, &QMLBridge::moveBullet);
     connect(_game, &Game::flagLost, this, &QMLBridge::flagChanged);
+    connect(_game, &Game::statsChanged, this, &QMLBridge::statsChanged);
     //connect(_game, &Game::playerRestarted, this, &QMLBridge::playerRestarted)
 
     connect(this, SIGNAL(qmlTankAction(int,int)), SLOT(humanTankAction(int,int)));
@@ -41,14 +38,14 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     _game->start();
 }
 
-QString QMLBridge::lowerFilename() const
+QImage QMLBridge::lowerMapImage() const
 {
-    return _lowerFilename;
+    return _lowerMapImage;
 }
 
-QString QMLBridge::bushFilename() const
+QImage QMLBridge::bushImage() const
 {
-    return _bushFilename;
+    return _bushImage;
 }
 
 QSize QMLBridge::boardImageSize() const
@@ -65,6 +62,21 @@ QRect QMLBridge::flagGeometry() const
 QString QMLBridge::flagFile() const
 {
     return _game->flag()->isBroken()? "img/flag_broken" : "img/flag";
+}
+
+QString QMLBridge::lifesStat() const
+{
+    QString lifes = QString("<b>AI: %1</b>\n").arg(_game->aiLifes());
+    for (int i = 0; i < _game->playersCount(); i++) {
+        lifes += QString("<b>P%1: %2</b>\n").arg(QString::number(i + 1),
+                                                 QString::number(_game->playerLifes(i)));
+    }
+    return lifes;
+}
+
+void QMLBridge::setBridgeId(const QString &id)
+{
+    _bridgeId = id;
 }
 
 void QMLBridge::mapLoaded()
@@ -100,13 +112,13 @@ void QMLBridge::mapLoaded()
         }
     }
 
-    QImage lowerLayer(_game->board()->size() * minBlockSize, QImage::Format_ARGB32);
-    lowerLayer.fill(0);
-    QPainter lowerPainter(&lowerLayer);
+    _lowerMapImage = QImage(_game->board()->size() * minBlockSize, QImage::Format_ARGB32);
+    _lowerMapImage.fill(0);
+    QPainter lowerPainter(&_lowerMapImage);
 
-    QImage bushLayer(_game->board()->size() * minBlockSize, QImage::Format_ARGB32);
-    bushLayer.fill(0);
-    QPainter bushPainter(&bushLayer);
+    _bushImage = QImage(_game->board()->size() * minBlockSize, QImage::Format_ARGB32);
+    _bushImage.fill(0);
+    QPainter bushPainter(&_bushImage);
 
     Board::Iterator it = _game->board()->iterate();
     while (it.isValid()) {
@@ -123,8 +135,8 @@ void QMLBridge::mapLoaded()
     // that's the most easy way. QQuickImageProvider is just a holy crap (I'm sorry)
     // and QSG* is probably not expected by interviewers and it's anyway even
     // more complicated even if idealogically more correct.
-    lowerLayer.save(_lowerFilename);
-    bushLayer.save(_bushFilename);
+    //lowerLayer.save(_lowerFilename);
+    //bushLayer.save(_bushFilename);
 
     emit mapRendered();
 }

@@ -16,26 +16,32 @@ class Tank;
 class QMLBridge : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString mapImageFilename READ lowerFilename NOTIFY mapRendered)
-    Q_PROPERTY(QString bushImageFilename READ bushFilename NOTIFY mapRendered)
+    Q_PROPERTY(QString bridgeId READ bridgeId)
     Q_PROPERTY(QSize boardImageSize READ boardImageSize NOTIFY mapRendered)
-
     Q_PROPERTY(QRect flagGeometry READ flagGeometry NOTIFY mapRendered)
     Q_PROPERTY(QString flagFile READ flagFile NOTIFY flagChanged)
 
+    Q_PROPERTY(QString lifesStat READ lifesStat NOTIFY statsChanged)
+
 public:
     explicit QMLBridge(QObject *parent = 0);
-    QString lowerFilename() const;
-    QString bushFilename() const;
+    QImage lowerMapImage() const;
+    QImage bushImage() const;
+
     QSize boardImageSize() const;
     QRect flagGeometry() const;
     QString flagFile() const;
+    QString lifesStat() const;
+
+    inline QString bridgeId() const { return _bridgeId; }
+    void setBridgeId(const QString &id);
 
 private:
     QVariant tank2variant(Tank *tank);
 
 signals:
     void mapRendered();
+    void statsChanged();
     void blockRemoved(QRect block);
 
     void newTank(QVariant tank);
@@ -68,10 +74,13 @@ private slots:
     void destroyTank(QObject *obj);
     void detonateBullet();
 private:
+    QString _bridgeId;
     QTemporaryDir _tmpDir;
     Game *_game;
-    QString _lowerFilename;
-    QString _bushFilename;
+
+    QImage _lowerMapImage;
+    QImage _bushImage;
+
     int _qmlId;
     //QHash<QString, QWeakPointer<Block>> _activeBlocks;
 };

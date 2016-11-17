@@ -11,16 +11,18 @@ SOURCES += logic/main.cpp \
     logic/bonus.cpp \
     logic/abstractmaploader.cpp \
     logic/randommaploader.cpp \
-    logic/qmlbridge.cpp \
+    logic/qml/qmlbridge.cpp \
     logic/game.cpp \
-    logic/qmltankimageprovider.cpp \
+    logic/qml/qmltankimageprovider.cpp \
     logic/tank.cpp \
     logic/bullet.cpp \
     logic/abstractplayer.cpp \
     logic/humanplayer.cpp \
     logic/aiplayer.cpp \
     logic/ai.cpp \
-    logic/flag.cpp
+    logic/flag.cpp \
+    logic/qml/qmlmapimageprovider.cpp \
+    logic/qml/qmlmain.cpp
 
 RESOURCES += render/qml.qrc
 
@@ -38,9 +40,9 @@ HEADERS += \
     logic/bonus.h \
     logic/abstractmaploader.h \
     logic/randommaploader.h \
-    logic/qmlbridge.h \
+    logic/qml/qmlbridge.h \
     logic/game.h \
-    logic/qmltankimageprovider.h \
+    logic/qml/qmltankimageprovider.h \
     logic/tank.h \
     logic/bullet.h \
     logic/abstractplayer.h \
@@ -48,4 +50,8 @@ HEADERS += \
     logic/aiplayer.h \
     logic/ai.h \
     logic/basics.h \
-    logic/flag.h
+    logic/flag.h \
+    logic/qml/qmlmapimageprovider.h \
+    logic/qml/qmlmain.h
+
+INCLUDEPATH += $$PWD/logic $$PWD/logic/qml

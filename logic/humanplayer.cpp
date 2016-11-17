@@ -102,13 +102,25 @@ void HumanPlayer::clockTick()
 
 void HumanPlayer::catchBullet()
 {
-	if (_lifes) {
-		_lifes--;
+	if (!_lifes) {
+		qDebug("Something went wrong");
+        return;
+    }
+    _lifes--;
+    if (_lifes) {
 		moveToStart();
 		emit moved();
-		return;
-	}
-	emit tankDestroyed();
+	} else {
+        emit tankDestroyed();
+        _tank.clear();
+    }
+    emit lifeLost();
+}
+
+void HumanPlayer::killAll()
+{
+    _lifes = 1;
+    catchBullet();
 }
 
 } // namespace Tanks

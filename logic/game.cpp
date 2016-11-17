@@ -77,6 +77,28 @@ void Game::setPlayersCount(int n)
     _d->playersCount = qMax(1, qMin(n, 20)); // it makes me think about network support :)
 }
 
+int Game::playersCount()
+{
+    return _d->playersCount;
+}
+
+int Game::aiLifes()
+{
+    return _d->ai->lifesCount();
+}
+
+int Game::playerLifes(int playerId)
+{
+    if (!_d->humans.count()) {
+        return 0;
+    }
+    auto player(_d->humans.value(playerId % _d->humans.count()));
+    if (player) {
+        return player->lifesCount();
+    }
+    return 0;
+}
+
 QSharedPointer<Flag> &Game::flag() const
 {
     return _d->flag;
@@ -88,10 +110,14 @@ void Game::connectPlayerSignals(AbstractPlayer *player)
     connect(player, &AbstractPlayer::tankDestroyed, this, &Game::destroyTank);
     connect(player, &AbstractPlayer::fired, this, &Game::tankFired);
     connect(player, &AbstractPlayer::moved, this, &Game::moveTank);
+    connect(player, &AbstractPlayer::lifeLost, this, &Game::statsChanged);
 }
 
 void Game::playerMoveRequested(int playerNum, int direction)
 {
+    if (!_d->humans.count()) {
+        return;
+    }
     auto player = _d->humans.value(playerNum % _d->humans.count());
     if (player) {
         player->move((Direction)direction);
@@ -100,6 +126,9 @@ void Game::playerMoveRequested(int playerNum, int direction)
 
 void Game::playerFireRequested(int playerNum)
 {
+    if (!_d->humans.count()) {
+        return;
+    }
     auto player = _d->humans.value(playerNum % _d->humans.count());
     if (player) {
         player->fire();
@@ -108,6 +137,9 @@ void Game::playerFireRequested(int playerNum)
 
 void Game::playerStopMoveRequested(int playerNum, int direction)
 {
+    if (!_d->humans.count()) {
+        return;
+    }
     auto player = _d->humans.value(playerNum % _d->humans.count());
     if (player) {
         player->stop((Direction)direction);
@@ -116,6 +148,9 @@ void Game::playerStopMoveRequested(int playerNum, int direction)
 
 void Game::playerStopFireRequested(int playerNum)
 {
+    if (!_d->humans.count()) {
+        return;
+    }
     auto player = _d->humans.value(playerNum % _d->humans.count());
     if (player) {
         player->stopFire();
@@ -147,11 +182,13 @@ void Game::mapReady()
 
     _d->ai->start();
     _d->clock->start();
+
+    emit statsChanged();
 }
 
 void Game::newTankAvailable()
 {
-    qDebug() << "New tank!";
+    //qDebug() << "New tank!";
     AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
     auto tank = player->tank();
     emit newTank(tank.data()); // let's believe it won't be destroyed and connection is direct
@@ -221,6 +258,11 @@ void Game::moveBullets()
             _d->flag->burn();
             explType = Bullet::BigExplosion;
             emit flagLost();
+            foreach (auto &human, _d->humans) {
+                if (human->tank()) { // still alive
+                    human->killAll();
+                }
+            }
         }
         if (!clashFound) {
             // meet other bullets
