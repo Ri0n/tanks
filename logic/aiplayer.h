@@ -43,6 +43,8 @@ public:
 
     void start();
     void clockTick();
+private slots:
+    void onTankDestroyed();
 private:
     AI *_ai;
 };

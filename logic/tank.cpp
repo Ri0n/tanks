@@ -41,8 +41,9 @@ Tank::Tank(Affinity affinity, quint8 variant) :
 
 void Tank::setTankDefaults()
 {
+    _armorLevel = 1;
     if (_affinity == Friendly) {
-        _lives = 1;
+        _armorLevel = 1;
         if (_variant == BurstFireTank) { // burst-fire tank
             _bulletCount = 2;
         }
@@ -51,12 +52,12 @@ void Tank::setTankDefaults()
             _speed = 2;
         }
         if (_variant == ArmoredTank) { // armoured
-            _lives = 4;
+            _armorLevel = 4;
         }
     }
 }
 
-QSharedPointer<Bullet> Tank::fire()
+void Tank::fire()
 {
     auto b = new Bullet(_affinity,
                         isArmorPiercing()?Bullet::ArmorPiercing : Bullet::Regular);
@@ -85,7 +86,9 @@ QSharedPointer<Bullet> Tank::fire()
     b->setDirection(_direction);
     resetShootClock();
 
-    return QSharedPointer<Bullet>(b);
+    _bullet = QSharedPointer<Bullet>(b);
+
+    emit fired();
 }
 
 void Tank::resetShootClock()
@@ -107,6 +110,26 @@ void Tank::clockTick()
         _shootTicks--;
     }
     DynamicBlock::clockTick();
+}
+
+void Tank::catchBullet()
+{
+	if (!_armorLevel) {
+		qDebug("Something went wrong");
+        return;
+    }
+    _armorLevel--;
+    if (_armorLevel) {
+		emit armourChanged();
+	} else {
+        emit tankDestroyed();
+    }
+}
+
+void Tank::selfDestroy()
+{
+    _armorLevel = 1;
+    catchBullet();
 }
 
 } // namespace Tanks

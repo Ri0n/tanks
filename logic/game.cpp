@@ -134,9 +134,6 @@ QSharedPointer<Flag> &Game::flag() const
 void Game::connectPlayerSignals(AbstractPlayer *player)
 {
     connect(player, &AbstractPlayer::newTankAvailable, this, &Game::newTankAvailable);
-    connect(player, &AbstractPlayer::tankDestroyed, this, &Game::destroyTank);
-    connect(player, &AbstractPlayer::fired, this, &Game::tankFired);
-    connect(player, &AbstractPlayer::moved, this, &Game::moveTank);
     connect(player, &AbstractPlayer::lifeLost, this, &Game::statsChanged);
 }
 
@@ -184,9 +181,10 @@ void Game::playerStopFireRequested(int playerNum)
     }
 }
 
-void Game::start()
+void Game::start(int playersCount)
 {
     reset();
+    _d->playersCount = playersCount;
     if (!_d->board->loadMap(_d->mapLoader)) {
         qDebug("Failed to load  map");
         return;
@@ -219,30 +217,16 @@ void Game::newTankAvailable()
     AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
     auto tank = player->tank();
     emit newTank(tank.data()); // let's believe it won't be destroyed and connection is direct
+
+    // the last signal
+    connect(tank.data(), &Tank::fired, this, &Game::onTankFired);
 }
 
-void Game::destroyTank()
+void Game::onTankFired()
 {
-    AbstractPlayer *p = qobject_cast<AbstractPlayer *>(sender());
-    if (p) {
-        emit tankDestroyed(p->tank().data());
-        return;
-    }
-}
-
-void Game::tankFired()
-{
-    AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
-    auto bullet = player->takeBullet();
+    Tank *tank = qobject_cast<Tank *>(sender());
+    auto bullet = tank->takeBullet();
     _d->bullets.prepend(bullet);
-    emit newBullet(bullet.data());
-}
-
-void Game::moveTank()
-{
-    AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
-    auto tank = player->tank();
-    emit tankMoved(tank.data());
 }
 
 void Game::clockTick()
@@ -268,7 +252,7 @@ void Game::moveBullets()
         if (bullet->affinity() == Alien) {
             foreach (auto p, _d->humans) {
                 if (p->tank() && p->tank()->hasClash(*bullet)) {
-                    p->catchBullet();
+                    p->tank()->catchBullet();
                     clashFound = true;
                     break;
                 }
@@ -276,7 +260,7 @@ void Game::moveBullets()
         } else {
             QSharedPointer<AIPlayer> p = _d->ai->findClash(bullet.dynamicCast<Block>());
             if (p) {
-                p->catchBullet();
+                p->tank()->catchBullet();
                 clashFound = true;
             }
         }
@@ -350,7 +334,7 @@ void Game::moveBullets()
                         bullet->explode(Bullet::NoDamage);
                         continue;
                     }
-                    emit bulletMoved(bullet.data());
+                    //emit bulletMoved(bullet.data());
                 }
 
                 bullet->clockTick();

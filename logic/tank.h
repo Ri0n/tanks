@@ -66,19 +66,33 @@ public:
     bool isArmorPiercing() const
     { return (_affinity == Friendly) && (_variant == ArmorPiercingTank); }
 
-    QSharedPointer<Bullet> fire();
+    void fire();
     void resetShootClock();
 
     OutBoardAction outBoardAction() const;
 
     void clockTick();
 
+    void catchBullet();
+    void selfDestroy();
+
+    QSharedPointer<Bullet> takeBullet()
+    { QSharedPointer<Bullet> ret; _bullet.swap(ret); return ret; }
+    QSharedPointer<Bullet> bullet() const { return _bullet; }
+
+
+signals:
+    void tankDestroyed();
+    void armourChanged();
+    void fired();
+
 private:
     Affinity _affinity;
     quint8 _variant;
-    quint8 _lives;
+    quint8 _armorLevel;
     quint8 _bulletCount;
     int _shootTicks;
+    QSharedPointer<Bullet> _bullet;
 };
 
 } // namespace Tanks

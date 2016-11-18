@@ -57,12 +57,12 @@ Rectangle {
 		Fire  = 4
 		*/
 		property var p1keys: [Qt.Key_W, Qt.Key_S, Qt.Key_A, Qt.Key_D, Qt.Key_Space]
-		property var p2keys: [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Enter]
+		property var p2keys: [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Shift]
 
 		property var tanksList: []
 		property var bulletsList: []
-		property var tanksMap: {}
-		property var bulletsMap: {}
+		property var tanksMap: ({})
+		property var bulletsMap: ({})
 		property var pendingBlockRemove: []
 
 		function playSound(sound, id) {
@@ -202,6 +202,7 @@ Rectangle {
 			old.source = 'image://tankprovider/' + tank.affinity +
 				'/' + tank.variant + '/' + tank.direction + '/' + old.animFrame;
 			old.animFrame = (old.animFrame + 1) % 2;
+            //console.log("x=" + old.x +  " y=" + old.y);
 		}
 
 		onTankDestroyed: {
@@ -321,34 +322,22 @@ Rectangle {
 
 	Column {
 		anchors.fill: parent
-		spacing: 5
+		spacing: 1
 		padding: 5
 
+        StartButton {
+            text: "1 Player"
+            mouseArea.onClicked: game.restart(1);
+        }
 
-		Rectangle {
-			height: 30
-			width: parent.width - 10
-			color: '#008800'
-
-
-			Text {
-				anchors.fill: parent
-				text: "<b>Restart!</b>"
-			    font.pointSize: 12
-			    color: "white"
-				horizontalAlignment: Text.AlignHCenter
-				verticalAlignment: Text.AlignVCenter
-			}
-
-			MouseArea {
-				anchors.fill: parent
-				acceptedButtons: Qt.LeftButton
-				onClicked: game.restart();
-			}
-		}
+        StartButton {
+            text: "2 Players"
+            mouseArea.onClicked: game.restart(2);
+        }
 
 		Text {
-			height: 30
+            width: paintedWidth + 20
+            height: paintedHeight + 20
 			text: game.lifesStat
 			font.pointSize: 12
 			color: "white"

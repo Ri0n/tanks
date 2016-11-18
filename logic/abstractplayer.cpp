@@ -41,11 +41,4 @@ void AbstractPlayer::clockTick()
     }
 }
 
-void AbstractPlayer::catchBullet()
-{
-    emit tankDestroyed();
-    _tank.clear();
-    emit lifeLost();
-}
-
 } // namespace Tanks

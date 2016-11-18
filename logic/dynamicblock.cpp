@@ -68,6 +68,8 @@ void DynamicBlock::move()
     }
     _geometry.translate(dx, dy);
     _clockPhase = _speed;
+
+    emit moved();
 }
 
 QRect DynamicBlock::forwardMoveRect(int distance) const

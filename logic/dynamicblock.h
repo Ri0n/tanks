@@ -71,6 +71,7 @@ public:
 
     inline void setDirection(Direction dir) {
         _direction = dir;
+        emit moved();
     }
     inline Direction direction() const { return _direction; }
 
@@ -80,6 +81,8 @@ public:
 
 protected:
 
+signals:
+    void moved();
 
 
 protected:

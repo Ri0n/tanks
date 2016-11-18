@@ -51,11 +51,9 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     _game = new Game(this);
     connect(_game, &Game::mapLoaded, this, &QMLBridge::mapLoaded);
     connect(_game, &Game::newTank, this, &QMLBridge::newTankAvailable);
-    connect(_game, &Game::newBullet, this, &QMLBridge::newBulletAvailable);
-    connect(_game, &Game::tankMoved, this, &QMLBridge::moveTank);
-    connect(_game, &Game::tankDestroyed, this, &QMLBridge::destroyTank);
+
+
     connect(_game, &Game::blockRemoved, this, &QMLBridge::removeBlock);
-    connect(_game, &Game::bulletMoved, this, &QMLBridge::moveBullet);
     connect(_game, &Game::flagLost, this, &QMLBridge::flagChanged);
     connect(_game, &Game::statsChanged, this, &QMLBridge::statsChanged);
     //connect(_game, &Game::playerRestarted, this, &QMLBridge::playerRestarted)
@@ -93,9 +91,9 @@ QString QMLBridge::flagFile() const
 
 QString QMLBridge::lifesStat() const
 {
-    QString lifes = QString("<b>AI: %1</b>\n").arg(_game->aiLifes());
+    QString lifes = QString("<b>AI: %1</b><br>").arg(_game->aiLifes());
     for (int i = 0; i < _game->playersCount(); i++) {
-        lifes += QString("<b>P%1: %2</b>\n").arg(QString::number(i + 1),
+        lifes += QString("<b>P%1: %2</b><br>").arg(QString::number(i + 1),
                                                  QString::number(_game->playerLifes(i)));
     }
     return lifes;
@@ -172,15 +170,23 @@ void QMLBridge::newTankAvailable(QObject *obj)
 {
     Tank *tank = qobject_cast<Tank*>(obj);
 
+    connect(tank, &Tank::fired, this, &QMLBridge::newBulletAvailable);
+    connect(tank, &Tank::moved, this, &QMLBridge::moveTank);
+    connect(tank, &Tank::tankDestroyed, this, &QMLBridge::destroyTank);
+
+
     QString id = QString("tank") + QString::number(_qmlId++);
     //_activeBlocks.insert(id, tank.dynamicCast<Block>());
     tank->setProperty("qmlid", id);
     emit newTank(tank2variant(tank));
 }
 
-void QMLBridge::newBulletAvailable(QObject *obj)
+void QMLBridge::newBulletAvailable()
 {
-    Bullet *bullet = qobject_cast<Bullet*>(obj);
+    Bullet *bullet = qobject_cast<Tank*>(sender())->bullet().data();
+
+    connect(bullet, &DynamicBlock::moved, this, &QMLBridge::moveBullet);
+
 
     QString id = QString("bullet") + QString::number(_qmlId++);
     //_activeBlocks.insert(id, tank.dynamicCast<Block>());
@@ -198,20 +204,20 @@ void QMLBridge::newBulletAvailable(QObject *obj)
     emit newBullet(vb);
 }
 
-void QMLBridge::moveTank(QObject *obj)
+void QMLBridge::moveTank()
 {
-    auto tank = qobject_cast<Tank*>(obj);
+    auto tank = qobject_cast<Tank*>(sender());
     emit tankUpdated(tank2variant(tank));
 }
 
-void QMLBridge::destroyTank(QObject *obj)
+void QMLBridge::destroyTank()
 {
-    emit tankDestroyed(obj->property("qmlid").toString());
+    emit tankDestroyed(sender()->property("qmlid").toString());
 }
 
-void QMLBridge::moveBullet(QObject *obj)
+void QMLBridge::moveBullet()
 {
-    auto bullet = qobject_cast<Bullet*>(obj);
+    auto bullet = qobject_cast<Bullet*>(sender());
     //qDebug() << "New position: " << bullet->geometry().topLeft() * minBlockSize;
     emit bulletMoved(bullet->property("qmlid").toString(),
                     bullet->geometry().topLeft() * minBlockSize);
@@ -236,9 +242,9 @@ QVariant QMLBridge::tank2variant(Tank *tank)
     return vtank;
 }
 
-void QMLBridge::restart()
+void QMLBridge::restart(int playersCount)
 {
-    _game->start();
+    _game->start(playersCount);
 }
 
 void QMLBridge::removeBlock(const QRect &r)

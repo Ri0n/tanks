@@ -61,11 +61,8 @@ signals:
     void mapLoaded();
     void playerRestarted();
     void newTank(QObject*);
-    void newBullet(QObject*);
-    void tankMoved(QObject*);
     void tankDestroyed(QObject*);
     void bulletRemoved(QObject*);
-    void bulletMoved(QObject*);
     void blockRemoved(QRect);
     void flagLost();
     void statsChanged();
@@ -73,7 +70,7 @@ signals:
 public slots:
     void playerMoveRequested(int playerNum, int direction);
     void playerFireRequested(int playerNum);
-    void start();
+    void start(int playersCount = 1);
 
     void playerStopMoveRequested(int playerNum, int direction);
     void playerStopFireRequested(int playerNum);
@@ -83,9 +80,7 @@ private slots:
     void clockTick();
 
     void newTankAvailable();
-    void destroyTank();
-    void tankFired();
-    void moveTank();
+    void onTankFired();
 private:
     friend class GamePrivate;
     GamePrivate *_d;

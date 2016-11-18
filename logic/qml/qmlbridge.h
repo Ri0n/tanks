@@ -85,7 +85,7 @@ signals:
     void qmlTankActionStop(int player, int key);
 
 public slots:
-    void restart();
+    void restart(int playersCount);
 
 private slots:
     void humanTankAction(int player, int key);
@@ -94,11 +94,11 @@ private slots:
     void mapLoaded();
 
     void newTankAvailable(QObject *obj);
-    void newBulletAvailable(QObject *obj);
-    void moveTank(QObject *obj);
+    void newBulletAvailable();
+    void moveTank();
     void removeBlock(const QRect &r);
-    void moveBullet(QObject *obj);
-    void destroyTank(QObject *obj);
+    void moveBullet();
+    void destroyTank();
     void detonateBullet();
 private:
     QString _bridgeId;

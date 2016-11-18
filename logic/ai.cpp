@@ -49,6 +49,7 @@ void AI::reset()
     _activePlayers.clear();
     _inactivePlayers.clear();
     _tanks.clear();
+    _activateClock = 0;
 }
 
 void AI::start()
@@ -56,9 +57,11 @@ void AI::start()
     _tanks = _game->board()->initialEnemyTanks();
     for (int i = 0; i < 4; i++) { // we want 4 tanks at once on the map
         auto robot = QSharedPointer<AIPlayer>(new AIPlayer(this));
-        emit newPlayer(robot.data());
         _inactivePlayers.append(robot);
-        connect(robot.data(), &AIPlayer::tankDestroyed, this, &AI::deactivatePlayer);
+
+        // we need this connection first to keep stats valid
+        connect(robot.data(), &AIPlayer::lifeLost, this, &AI::deactivatePlayer);
+        emit newPlayer(robot.data());
     }
 }
 

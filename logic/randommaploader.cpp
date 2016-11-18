@@ -180,7 +180,7 @@ QList<QPoint> RandomMapLoader::enemyStartPositions() const
 QList<QPoint> RandomMapLoader::friendlyStartPositions() const
 {
     return QList<QPoint>() << QPoint(boardWidth / 2 - 5, boardHeight - 2)
-                           << QPoint(boardWidth / 2 + 3, boardHeight - 2);
+                           << QPoint(boardWidth / 2 + 1, boardHeight - 2);
 }
 
 QPoint RandomMapLoader::flagPosition() const

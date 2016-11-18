@@ -51,12 +51,13 @@ public:
     inline int index() const { return _playerIndex; }
 
     void clockTick();
-    void catchBullet();
     void killAll();
 
 protected:
     void moveToStart();
 
+private slots:
+    void onTankDestroyed();
 private:
     Game *_game;
     int _playerIndex;

@@ -50,9 +50,11 @@ int HumanPlayer::lifesCount() const
 void HumanPlayer::start()
 {
     _tank = QSharedPointer<Tank>(new Tank(Friendly));
-	_oldDirection = _tank->direction();
+    _oldDirection = _tank->direction();
 	moveToStart();
     emit newTankAvailable();
+    // our handler is the last
+    connect(_tank.data(), &Tank::tankDestroyed, this, &HumanPlayer::onTankDestroyed);
 }
 
 void HumanPlayer::moveToStart()
@@ -114,31 +116,28 @@ void HumanPlayer::clockTick()
 
     if (shouldMove && !(props & Board::TankObstackle)) {
         _tank->move();
-        emit moved();
-        _oldDirection = _tank->direction();
-    } else if (_oldDirection != _tank->direction() && _tank->canMove()) {
-        emit moved();
         _oldDirection = _tank->direction();
     }
+//    else if (_oldDirection != _tank->direction() && _tank->canMove()) {
+//        emit moved();
+//        _oldDirection = _tank->direction();
+//    }
 
     if (shouldShoot) {
-        _bullet = _tank->fire();
-        emit fired();
+        _tank->fire();
 	}
 }
 
-void HumanPlayer::catchBullet()
+void HumanPlayer::onTankDestroyed()
 {
-	if (!_lifes) {
+    if (!_lifes) {
 		qDebug("Something went wrong");
         return;
     }
     _lifes--;
     if (_lifes) {
-		moveToStart();
-		emit moved();
-	} else {
-        emit tankDestroyed();
+        start();
+    } else {
         _tank.clear();
     }
     emit lifeLost();
@@ -146,8 +145,10 @@ void HumanPlayer::catchBullet()
 
 void HumanPlayer::killAll()
 {
-    _lifes = 1;
-    catchBullet();
+    if (_tank) {
+        _lifes = 1;
+        _tank->selfDestroy();
+    }
 }
 
 } // namespace Tanks

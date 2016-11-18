@@ -50,6 +50,7 @@ void AIPlayer::start()
     _tank = QSharedPointer<Tank>(new Tank(Alien, _ai->takeTank()));
     _tank->setInitialPosition(_ai->initialPosition());
     emit newTankAvailable();
+    connect(_tank.data(), &Tank::tankDestroyed, this, &AIPlayer::onTankDestroyed);
 }
 
 void AIPlayer::clockTick()
@@ -73,7 +74,7 @@ void AIPlayer::clockTick()
         bool moving = r < 15;
         bool needNewDir = !canMoveForward || d > 13;
 
-        Direction oldDir = _tank->direction();
+        //Direction oldDir = _tank->direction();
         if (needNewDir) {
             if (_ai->game()->flag()->isBroken()) {
                 _tank->setDirection((Direction)(qrand() % 4));
@@ -107,14 +108,13 @@ void AIPlayer::clockTick()
 
         if (canMoveForward && moving) {
             _tank->move();
-            emit moved();
-            oldDir = _tank->direction();
+            // oldDir = _tank->direction();
         } else if (props & Board::Breakable && !(props & Board::Sturdy)) {
             forceShoot = true;
         }
-        if (oldDir != _tank->direction()) {
-            emit moved(); // just turned, but anyway need to update
-        }
+//        if (oldDir != _tank->direction()) {
+//            emit moved(); // just turned, but anyway need to update
+//        }
         if (!moving) {
             _tank->setClockPhase(20);
         }
@@ -122,11 +122,16 @@ void AIPlayer::clockTick()
 
     if (_tank->canShoot()) {
         if (forceShoot || qrand() < RAND_MAX / 100 ) {
-            _bullet = _tank->fire();
-            emit fired();
+            _tank->fire();
         }
     }
 
+}
+
+void AIPlayer::onTankDestroyed()
+{
+    _tank.clear();
+    emit lifeLost();
 }
 
 } // namespace Tanks

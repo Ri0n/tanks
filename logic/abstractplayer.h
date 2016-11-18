@@ -43,26 +43,16 @@ public:
     explicit AbstractPlayer(QObject *parent = 0);
     virtual int lifesCount() const = 0;
     QSharedPointer<Tank> tank() const { return _tank; }
-    QSharedPointer<Bullet> takeBullet()
-    { QSharedPointer<Bullet> ret; _bullet.swap(ret); return ret; }
-    virtual void catchBullet();
     virtual void clockTick();
-
-
 
 signals:
     void newTankAvailable();
-    void tankDestroyed();
-    void tankMoved();
-    void moved();
-    void fired();
     void lifeLost();
 
 public slots:
 
 protected:
     QSharedPointer<Tank> _tank;
-    QSharedPointer<Bullet> _bullet;
 };
 
 } // namespace Tanks
