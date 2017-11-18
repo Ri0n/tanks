@@ -156,7 +156,7 @@ QList<quint8> RandomMapLoader::enemyTanks() const
 {
     QList<quint8> ret;
     ret.reserve(10);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
         int val = qrand() % 12;
         if (val > 10) { // 11
             ret.append(Tank::ArmoredTank);

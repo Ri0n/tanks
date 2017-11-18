@@ -55,7 +55,7 @@ void AI::reset()
 void AI::start()
 {
     _tanks = _game->board()->initialEnemyTanks();
-    for (int i = 0; i < 4; i++) { // we want 4 tanks at once on the map
+    for (int i = 0; i < 8; i++) { // we want 4 tanks at once on the map
         auto robot = QSharedPointer<AIPlayer>(new AIPlayer(this));
         _inactivePlayers.append(robot);
 
