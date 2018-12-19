@@ -51,7 +51,7 @@ bool Board::loadMap(AbstractMapLoader *loader)
     }
     //_dynBlocks.clear();
     _size = loader->dimensions() * MAP_SCALE_FACTOR;
-    _size.boundedTo(QSize(1024,1024));
+    _size = _size.boundedTo(QSize(1024,1024));
     QRect boardRect(QPoint(0,0), _size);
     _map.resize(_size.width()*_size.height());
     _map.fill(0);
