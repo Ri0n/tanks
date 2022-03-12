@@ -28,7 +28,6 @@
 #ifndef TANKS_DYNAMICBLOCK_H
 #define TANKS_DYNAMICBLOCK_H
 
-
 #include <QtGlobal>
 
 #include "basics.h"
@@ -36,23 +35,13 @@
 
 namespace Tanks {
 
-class DynamicBlock : public Block
-{
+class DynamicBlock : public Block {
     Q_OBJECT
 public:
-
-
-    enum ForwardHint {
-        ForwardNothing,
-        ForwardBreakable = 1,
-        ForwardBlock = 2
-    };
+    enum ForwardHint { ForwardNothing, ForwardBreakable = 1, ForwardBlock = 2 };
     Q_DECLARE_FLAGS(ForwardHints, ForwardHint)
 
-    enum OutBoardAction {
-        Disappear,
-        StopMove
-    };
+    enum OutBoardAction { Disappear, StopMove };
 
     /* regarding speeds. we need next
      * 0 - fast bullet
@@ -62,32 +51,29 @@ public:
      */
 
     DynamicBlock(quint8 speed = 3, Direction direction = North);
-    inline void setClockPhase(quint16 phase) { _clockPhase = phase; } // useful for freeze bonus
-    virtual void clockTick();
-    virtual bool canMove() const;
-    void move();
+    inline void            setClockPhase(quint16 phase) { _clockPhase = phase; } // useful for freeze bonus
+    virtual void           clockTick();
+    virtual bool           canMove() const;
+    void                   move();
     virtual OutBoardAction outBoardAction() const = 0;
-    QRect forwardMoveRect(int distance = 1) const;
+    QRect                  forwardMoveRect(int distance = 1) const;
 
-    inline void setDirection(Direction dir) {
+    inline void setDirection(Direction dir)
+    {
         _direction = dir;
         emit moved();
     }
     inline Direction direction() const { return _direction; }
 
-    inline void setSpeed(quint8 speed) {
-        _speed = speed > 3? 3 : speed;
-    }
+    inline void setSpeed(quint8 speed) { _speed = speed > 3 ? 3 : speed; }
 
 protected:
-
 signals:
     void moved();
 
-
 protected:
-    quint16 _clockPhase;
-    quint8 _speed;
+    quint16   _clockPhase;
+    quint8    _speed;
     Direction _direction;
 };
 

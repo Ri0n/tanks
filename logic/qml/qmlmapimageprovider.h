@@ -28,15 +28,14 @@
 #ifndef TANKS_QMLMAPIMAGEPROVIDER_H
 #define TANKS_QMLMAPIMAGEPROVIDER_H
 
-#include <QQuickImageProvider>
 #include <QPointer>
+#include <QQuickImageProvider>
 
 namespace Tanks {
 
 class QMLBridge;
 
-class QMLMapImageProvider : public QQuickImageProvider
-{
+class QMLMapImageProvider : public QQuickImageProvider {
 public:
     QMLMapImageProvider();
 
@@ -44,7 +43,7 @@ public:
 
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
 
-    static QMap<QString,QPointer<QMLBridge>> _bridges;
+    static QMap<QString, QPointer<QMLBridge>> _bridges;
 };
 
 } // namespace Tanks

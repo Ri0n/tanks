@@ -35,8 +35,7 @@ namespace Tanks {
 
 class AI;
 
-class AIPlayer : public AbstractPlayer
-{
+class AIPlayer : public AbstractPlayer {
 public:
     AIPlayer(AI *ai);
     int lifesCount() const;
@@ -45,6 +44,7 @@ public:
     void clockTick();
 private slots:
     void onTankDestroyed();
+
 private:
     AI *_ai;
 };

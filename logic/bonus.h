@@ -32,8 +32,7 @@
 
 namespace Tanks {
 
-class Bonus : public Tanks::StaticBlock
-{
+class Bonus : public Tanks::StaticBlock {
 public:
     Bonus();
 };

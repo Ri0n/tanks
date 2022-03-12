@@ -32,13 +32,12 @@
 
 namespace Tanks {
 
-class Flag : public StaticBlock
-{
+class Flag : public StaticBlock {
     Q_OBJECT
 public:
     Flag();
-    void restore();
-    void burn();
+    void        restore();
+    void        burn();
     inline bool isBroken() const { return _broken; }
 
 signals:

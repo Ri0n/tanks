@@ -32,27 +32,18 @@
 
 namespace Tanks {
 
-class Bullet : public DynamicBlock
-{
+class Bullet : public DynamicBlock {
     Q_OBJECT
 public:
-    enum Level {
-        Regular,
-        ArmorPiercing
-    };
+    enum Level { Regular, ArmorPiercing };
 
-    enum ExplosionType {
-        NoDamage,
-        BrickDestroyed,
-        Explosion,
-        BigExplosion
-    };
+    enum ExplosionType { NoDamage, BrickDestroyed, Explosion, BigExplosion };
 
     Bullet(Affinity affinity, Level level);
 
-    inline Affinity affinity() const { return _affinity; }
-    inline Level level() const { return _level; }
-    void explode(ExplosionType);
+    inline Affinity      affinity() const { return _affinity; }
+    inline Level         level() const { return _level; }
+    void                 explode(ExplosionType);
     inline ExplosionType explosionType() const { return _etype; }
 
     OutBoardAction outBoardAction() const;
@@ -61,8 +52,8 @@ signals:
     void detonated();
 
 private:
-    Affinity _affinity;
-    Level _level;
+    Affinity      _affinity;
+    Level         _level;
     ExplosionType _etype;
 };
 

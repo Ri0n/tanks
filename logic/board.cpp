@@ -27,9 +27,9 @@
 
 #include <QTimer>
 
+#include "abstractmaploader.h"
 #include "board.h"
 #include "staticblock.h"
-#include "abstractmaploader.h"
 #include "tank.h"
 
 namespace Tanks {
@@ -39,10 +39,7 @@ namespace Tanks {
 // or tank moves just half a brick at a time
 #define MAP_SCALE_FACTOR 2
 
-Board::Board(QObject *parent) : QObject(parent)
-{
-
-}
+Board::Board(QObject *parent) : QObject(parent) { }
 
 bool Board::loadMap(AbstractMapLoader *loader)
 {
@@ -51,15 +48,14 @@ bool Board::loadMap(AbstractMapLoader *loader)
     }
     //_dynBlocks.clear();
     _size = loader->dimensions() * MAP_SCALE_FACTOR;
-    _size = _size.boundedTo(QSize(1024,1024));
-    QRect boardRect(QPoint(0,0), _size);
-    _map.resize(_size.width()*_size.height());
+    _size = _size.boundedTo(QSize(1024, 1024));
+    QRect boardRect(QPoint(0, 0), _size);
+    _map.resize(_size.width() * _size.height());
     _map.fill(0);
 
     while (loader->hasNext()) {
         MapObject block = loader->next();
-        QRect cropped(block.geometry.topLeft() * MAP_SCALE_FACTOR,
-                      block.geometry.size() * MAP_SCALE_FACTOR);
+        QRect     cropped(block.geometry.topLeft() * MAP_SCALE_FACTOR, block.geometry.size() * MAP_SCALE_FACTOR);
         cropped &= boardRect;
         if (cropped.isEmpty()) {
             continue;
@@ -68,7 +64,7 @@ bool Board::loadMap(AbstractMapLoader *loader)
     }
 
     _flagPosition = loader->flagPosition() * MAP_SCALE_FACTOR;
-    renderBlock(Nothing, QRect(_flagPosition, QSize(4,4)));
+    renderBlock(Nothing, QRect(_flagPosition, QSize(4, 4)));
     renderFlagFrame(Brick);
 
     _initialEnemyTanks = loader->enemyTanks();
@@ -76,13 +72,13 @@ bool Board::loadMap(AbstractMapLoader *loader)
     foreach (const QPoint &p, loader->enemyStartPositions()) {
         QPoint sp = p * MAP_SCALE_FACTOR;
         _enemyStartPositions.append(sp);
-        renderBlock(Nothing, QRect(sp, QSize(4,4)));
+        renderBlock(Nothing, QRect(sp, QSize(4, 4)));
     }
 
     foreach (const QPoint &p, loader->friendlyStartPositions()) {
         QPoint sp = p * MAP_SCALE_FACTOR;
         _friendlyStartPositions.append(sp);
-        renderBlock(Nothing, QRect(sp, QSize(4,4)));
+        renderBlock(Nothing, QRect(sp, QSize(4, 4)));
     }
 
     return true;
@@ -90,7 +86,7 @@ bool Board::loadMap(AbstractMapLoader *loader)
 
 void Board::renderBlock(MapObjectType type, const QRect &area)
 {
-    QRect cr = QRect(QPoint(0,0),_size) & area;
+    QRect cr = QRect(QPoint(0, 0), _size) & area;
 
     if (cr.isEmpty())
         return;
@@ -106,22 +102,19 @@ void Board::renderBlock(MapObjectType type, const QRect &area)
 
 void Board::renderFlagFrame(MapObjectType type)
 {
-    QPoint tl = _flagPosition - QPoint(2,2);
-    renderBlock(type, QRect(tl, QSize(2,8)));
-    renderBlock(type, QRect(tl, QSize(8,2)));
-    renderBlock(type, QRect(tl + QPoint(0, 6), QSize(8,2)));
-    renderBlock(type, QRect(tl + QPoint(6, 0), QSize(2,8)));
+    QPoint tl = _flagPosition - QPoint(2, 2);
+    renderBlock(type, QRect(tl, QSize(2, 8)));
+    renderBlock(type, QRect(tl, QSize(8, 2)));
+    renderBlock(type, QRect(tl + QPoint(0, 6), QSize(8, 2)));
+    renderBlock(type, QRect(tl + QPoint(6, 0), QSize(2, 8)));
 }
 
-int Board::blockDivider() const
-{
-    return MAP_SCALE_FACTOR;
-}
+int Board::blockDivider() const { return MAP_SCALE_FACTOR; }
 
 Board::BlockProps Board::rectProps(const QRect &rect)
 {
     Board::BlockProps props;
-    if (!QRect(QPoint(0,0), _size).contains(rect)) {
+    if (!QRect(QPoint(0, 0), _size).contains(rect)) {
         return TankObstackle;
     }
     for (int i = 0; i < rect.width(); i++) {
@@ -136,9 +129,9 @@ Board::BlockProps Board::blockTypeProperties(MapObjectType type) const
 {
     switch (type) {
     case Concrete:
-        return TankObstackle|BulletObstackle|Breakable|Sturdy;
+        return TankObstackle | BulletObstackle | Breakable | Sturdy;
     case Brick:
-        return TankObstackle|BulletObstackle|Breakable;
+        return TankObstackle | BulletObstackle | Breakable;
     case Nothing:
     case Bush:
     case LastMapObjectType: // make compiler happy

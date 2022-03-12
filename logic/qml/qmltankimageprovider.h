@@ -34,8 +34,7 @@ namespace Tanks {
 
 class QMLBridge;
 
-class QMLTankImageProvider : public QQuickImageProvider
-{
+class QMLTankImageProvider : public QQuickImageProvider {
 public:
     QMLTankImageProvider();
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
@@ -44,8 +43,7 @@ private:
     QImage alltanks;
 };
 
-class QMLBulletImageProvider : public QQuickImageProvider
-{
+class QMLBulletImageProvider : public QQuickImageProvider {
 public:
     QMLBulletImageProvider();
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);

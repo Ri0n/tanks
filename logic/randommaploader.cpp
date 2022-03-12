@@ -26,17 +26,15 @@
 */
 
 #include <QDateTime>
-#include <QPainter>
 #include <QDebug>
+#include <QPainter>
 
 #include "randommaploader.h"
 #include "tank.h"
 
 namespace Tanks {
 
-RandomMapLoader::RandomMapLoader() :
-    boardWidth(50),
-    boardHeight(50)
+RandomMapLoader::RandomMapLoader() : boardWidth(50), boardHeight(50)
 {
     qsrand(QDateTime::currentDateTime().toTime_t());
 }
@@ -50,62 +48,62 @@ bool RandomMapLoader::open()
 
     for (i = 0; i < 20; i++) {
         // draw bricks
-        shapesQueue.enqueue({Brick, 4, 20});
+        shapesQueue.enqueue({ Brick, 4, 20 });
     }
 
     for (i = 0; i < 10; i++) {
         // draw concrete
-        shapesQueue.enqueue({Concrete, 3, 8});
+        shapesQueue.enqueue({ Concrete, 3, 8 });
     }
 
     for (i = 0; i < 10; i++) {
         // draw water
-        shapesQueue.enqueue({Water, 3, 8});
+        shapesQueue.enqueue({ Water, 3, 8 });
     }
 
     for (i = 0; i < 10; i++) {
         // draw water
-        shapesQueue.enqueue({Ice, 3, 8});
+        shapesQueue.enqueue({ Ice, 3, 8 });
     }
 
     for (i = 0; i < 20; i++) {
         // draw bush
-        shapesQueue.enqueue({Bush, 3, 8});
+        shapesQueue.enqueue({ Bush, 3, 8 });
     }
     return true;
 }
 
 void RandomMapLoader::generateShape(const PendingShape &shape)
 {
-    int rndWidth = qMax(shape.minSize, qrand()%(shape.maxSize+1));
-    int rndHeight = qMax(shape.minSize, qrand()%(shape.maxSize+1));
-    int rndLeft = qrand() % boardWidth - rndWidth / 2;
-    int rndTop = qrand() % boardHeight - rndHeight / 2;
+    int rndWidth  = qMax(shape.minSize, qrand() % (shape.maxSize + 1));
+    int rndHeight = qMax(shape.minSize, qrand() % (shape.maxSize + 1));
+    int rndLeft   = qrand() % boardWidth - rndWidth / 2;
+    int rndTop    = qrand() % boardHeight - rndHeight / 2;
 
-    int shapeVariant = qrand()%6; // with accent to ellipses
+    int shapeVariant = qrand() % 6; // with accent to ellipses
     switch (shapeVariant) {
     case 0:
         // vertical bar
-        objectQueue.enqueue(MapObject{QRect(rndLeft, rndTop, rndWidth, 2), shape.type});
+        objectQueue.enqueue(MapObject { QRect(rndLeft, rndTop, rndWidth, 2), shape.type });
         return;
     case 1:
         // horizontal bar
-        objectQueue.enqueue(MapObject{QRect(rndLeft, rndTop, 2, rndHeight), shape.type});
+        objectQueue.enqueue(MapObject { QRect(rndLeft, rndTop, 2, rndHeight), shape.type });
         return;
     case 2:
         if (shape.type != Brick) {
-            objectQueue.enqueue(MapObject{QRect(rndLeft, rndTop, rndWidth, rndHeight), shape.type});
+            objectQueue.enqueue(MapObject { QRect(rndLeft, rndTop, rndWidth, rndHeight), shape.type });
         } else {
-            objectQueue.enqueue(MapObject{QRect(rndLeft, rndTop, 1, rndHeight), shape.type});
-            objectQueue.enqueue(MapObject{QRect(rndLeft, rndTop, rndWidth, 1), shape.type});
-            objectQueue.enqueue(MapObject{QRect(rndLeft+rndWidth-1, rndTop, 1, rndHeight), shape.type});
-            objectQueue.enqueue(MapObject{QRect(rndLeft, rndTop+rndHeight-1, rndWidth, 1), shape.type});
+            objectQueue.enqueue(MapObject { QRect(rndLeft, rndTop, 1, rndHeight), shape.type });
+            objectQueue.enqueue(MapObject { QRect(rndLeft, rndTop, rndWidth, 1), shape.type });
+            objectQueue.enqueue(MapObject { QRect(rndLeft + rndWidth - 1, rndTop, 1, rndHeight), shape.type });
+            objectQueue.enqueue(MapObject { QRect(rndLeft, rndTop + rndHeight - 1, rndWidth, 1), shape.type });
         }
         return;
     }
 
     // comlex shapes left. have to scan them
-    QSize shapeSize(rndWidth, rndHeight);
+    QSize  shapeSize(rndWidth, rndHeight);
     QImage img(shapeSize, QImage::Format_ARGB32);
     img.fill(QColor(Qt::black));
     QPainter painter(&img);
@@ -113,13 +111,12 @@ void RandomMapLoader::generateShape(const PendingShape &shape)
         painter.setBrush(QColor(Qt::white));
     } else {
         QPen pen(QColor(Qt::white));
-        int penWidth = 2;
+        int  penWidth = 2;
         pen.setWidth(penWidth);
         painter.setPen(pen);
         shapeSize -= QSize(penWidth, penWidth);
     }
-    QRect drawRect(QPoint(0,0), shapeSize);
-
+    QRect drawRect(QPoint(0, 0), shapeSize);
 
     // only ellipse is supported
     painter.drawEllipse(drawRect);
@@ -127,21 +124,15 @@ void RandomMapLoader::generateShape(const PendingShape &shape)
     for (int y = 0; y < rndHeight; y++) {
         for (int x = 0; x < rndWidth; x++) {
             if (img.pixelColor(x, y) != Qt::black) {
-                objectQueue.enqueue(MapObject{QRect(rndLeft+x, rndTop+y, 1, 1), shape.type});
+                objectQueue.enqueue(MapObject { QRect(rndLeft + x, rndTop + y, 1, 1), shape.type });
             }
         }
     }
 }
 
-QSize RandomMapLoader::dimensions() const
-{
-    return QSize(boardWidth,boardHeight);
-}
+QSize RandomMapLoader::dimensions() const { return QSize(boardWidth, boardHeight); }
 
-bool RandomMapLoader::hasNext() const
-{
-    return !shapesQueue.isEmpty() || !objectQueue.isEmpty();
-}
+bool RandomMapLoader::hasNext() const { return !shapesQueue.isEmpty() || !objectQueue.isEmpty(); }
 
 MapObject RandomMapLoader::next()
 {
@@ -173,8 +164,7 @@ QList<quint8> RandomMapLoader::enemyTanks() const
 
 QList<QPoint> RandomMapLoader::enemyStartPositions() const
 {
-    return QList<QPoint>() << QPoint(0,0) << QPoint(boardWidth - 2, 0)
-                           << QPoint(boardWidth / 2, 0);
+    return QList<QPoint>() << QPoint(0, 0) << QPoint(boardWidth - 2, 0) << QPoint(boardWidth / 2, 0);
 }
 
 QList<QPoint> RandomMapLoader::friendlyStartPositions() const
@@ -183,9 +173,6 @@ QList<QPoint> RandomMapLoader::friendlyStartPositions() const
                            << QPoint(boardWidth / 2 + 1, boardHeight - 2);
 }
 
-QPoint RandomMapLoader::flagPosition() const
-{
-    return QPoint(boardWidth / 2 - 2, boardHeight - 2);
-}
+QPoint RandomMapLoader::flagPosition() const { return QPoint(boardWidth / 2 - 2, boardHeight - 2); }
 
 } // namespace Tanks

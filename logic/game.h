@@ -39,19 +39,18 @@ class Board;
 class Flag;
 
 class GamePrivate;
-class Game : public QObject
-{
+class Game : public QObject {
     Q_OBJECT
 public:
     explicit Game(QObject *parent = 0);
     ~Game();
-    Board *board() const;
+    Board                *board() const;
     QSharedPointer<Flag> &flag() const;
 
     void setPlayersCount(int n);
-    int playersCount();
-    int aiLifes();
-    int playerLifes(int playerId);
+    int  playersCount();
+    int  aiLifes();
+    int  playerLifes(int playerId);
 
 private:
     void moveBullets();
@@ -60,9 +59,9 @@ private:
 signals:
     void mapLoaded();
     void playerRestarted();
-    void newTank(QObject*);
-    void tankDestroyed(QObject*);
-    void bulletRemoved(QObject*);
+    void newTank(QObject *);
+    void tankDestroyed(QObject *);
+    void bulletRemoved(QObject *);
     void blockRemoved(QRect);
     void flagLost();
     void statsChanged();
@@ -81,6 +80,7 @@ private slots:
 
     void newTankAvailable();
     void onTankFired();
+
 private:
     friend class GamePrivate;
     GamePrivate *_d;

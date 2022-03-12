@@ -29,9 +29,6 @@
 
 namespace Tanks {
 
-Block::Block()
-{
-
-}
+Block::Block() { }
 
 } // namespace Tanks

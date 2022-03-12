@@ -30,28 +30,11 @@
 
 namespace Tanks {
 
-enum MapObjectType
-{
-    Nothing,
-    Concrete,
-    Brick,
-    Bush,
-    Ice,
-    Water,
-    LastMapObjectType
-};
+enum MapObjectType { Nothing, Concrete, Brick, Bush, Ice, Water, LastMapObjectType };
 
-enum Direction {
-    North,
-    South,
-    West,
-    East
-};
+enum Direction { North, South, West, East };
 
-enum Affinity {
-    Friendly,
-    Alien
-};
+enum Affinity { Friendly, Alien };
 
 } // namespace Tanks
 

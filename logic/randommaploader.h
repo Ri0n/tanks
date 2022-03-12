@@ -34,35 +34,34 @@
 
 namespace Tanks {
 
-class RandomMapLoader : public AbstractMapLoader
-{
+class RandomMapLoader : public AbstractMapLoader {
     // abstract shape
     struct PendingShape {
         MapObjectType type;
-        int minSize;
-        int maxSize;
+        int           minSize;
+        int           maxSize;
     };
 
 public:
     RandomMapLoader();
 
-    bool open();
-    QSize dimensions() const;
-    bool hasNext() const;
-    MapObject next();
+    bool          open();
+    QSize         dimensions() const;
+    bool          hasNext() const;
+    MapObject     next();
     QList<quint8> enemyTanks() const;
     QList<QPoint> enemyStartPositions() const;
     QList<QPoint> friendlyStartPositions() const;
-    QPoint flagPosition() const;
+    QPoint        flagPosition() const;
 
 private:
     void generateShape(const PendingShape &shape);
 
 private:
-    int boardWidth;
-    int boardHeight;
+    int                  boardWidth;
+    int                  boardHeight;
     QQueue<PendingShape> shapesQueue;
-    QQueue<MapObject> objectQueue;
+    QQueue<MapObject>    objectQueue;
 };
 
 } // namespace Tanks

@@ -32,10 +32,9 @@
 
 namespace Tanks {
 
-class StaticBlock : public Block
-{
+class StaticBlock : public Block {
     Q_OBJECT
-public:    
+public:
     typedef QSharedPointer<StaticBlock> Ptr;
 
     StaticBlock();

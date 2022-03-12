@@ -30,21 +30,19 @@
 #include <QPainter>
 #include <QStandardPaths>
 
-#include "qmlbridge.h"
-#include "game.h"
-#include "board.h"
 #include "abstractmaploader.h"
-#include "tank.h"
+#include "board.h"
 #include "flag.h"
+#include "game.h"
+#include "qmlbridge.h"
 #include "qmlmapimageprovider.h"
-
+#include "tank.h"
 
 namespace Tanks {
 
 static int minBlockSize = 8; // 4px. minimal breakable part or minimal move
 
-QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
-  _qmlId(0)
+QMLBridge::QMLBridge(QObject *parent) : QObject(parent), _qmlId(0)
 {
     QMLMapImageProvider::registerBridge(this);
 
@@ -52,31 +50,21 @@ QMLBridge::QMLBridge(QObject *parent) : QObject(parent),
     connect(_game, &Game::mapLoaded, this, &QMLBridge::mapLoaded);
     connect(_game, &Game::newTank, this, &QMLBridge::newTankAvailable);
 
-
     connect(_game, &Game::blockRemoved, this, &QMLBridge::removeBlock);
     connect(_game, &Game::flagLost, this, &QMLBridge::flagChanged);
     connect(_game, &Game::statsChanged, this, &QMLBridge::statsChanged);
-    //connect(_game, &Game::playerRestarted, this, &QMLBridge::playerRestarted)
+    // connect(_game, &Game::playerRestarted, this, &QMLBridge::playerRestarted)
 
-    connect(this, SIGNAL(qmlTankAction(int,int)), SLOT(humanTankAction(int,int)));
-    connect(this, SIGNAL(qmlTankActionStop(int,int)), SLOT(humanTankActionStop(int,int)));
+    connect(this, SIGNAL(qmlTankAction(int, int)), SLOT(humanTankAction(int, int)));
+    connect(this, SIGNAL(qmlTankActionStop(int, int)), SLOT(humanTankActionStop(int, int)));
     _game->start();
 }
 
-QImage QMLBridge::lowerMapImage() const
-{
-    return _lowerMapImage;
-}
+QImage QMLBridge::lowerMapImage() const { return _lowerMapImage; }
 
-QImage QMLBridge::bushImage() const
-{
-    return _bushImage;
-}
+QImage QMLBridge::bushImage() const { return _bushImage; }
 
-QSize QMLBridge::boardImageSize() const
-{
-    return _game->board()->size() * minBlockSize;
-}
+QSize QMLBridge::boardImageSize() const { return _game->board()->size() * minBlockSize; }
 
 QRect QMLBridge::flagGeometry() const
 {
@@ -84,25 +72,18 @@ QRect QMLBridge::flagGeometry() const
     return QRect(g.topLeft() * minBlockSize, g.size() * minBlockSize);
 }
 
-QString QMLBridge::flagFile() const
-{
-    return _game->flag()->isBroken()? "img/flag_broken" : "img/flag";
-}
+QString QMLBridge::flagFile() const { return _game->flag()->isBroken() ? "img/flag_broken" : "img/flag"; }
 
 QString QMLBridge::lifesStat() const
 {
     QString lifes = QString("<b>AI: %1</b><br>").arg(_game->aiLifes());
     for (int i = 0; i < _game->playersCount(); i++) {
-        lifes += QString("<b>P%1: %2</b><br>").arg(QString::number(i + 1),
-                                                 QString::number(_game->playerLifes(i)));
+        lifes += QString("<b>P%1: %2</b><br>").arg(QString::number(i + 1), QString::number(_game->playerLifes(i)));
     }
     return lifes;
 }
 
-void QMLBridge::setBridgeId(const QString &id)
-{
-    _bridgeId = id;
-}
+void QMLBridge::setBridgeId(const QString &id) { _bridgeId = id; }
 
 void QMLBridge::mapLoaded()
 {
@@ -111,12 +92,7 @@ void QMLBridge::mapLoaded()
     //_activeBlocks.clear();
 
     static const char *textures[LastMapObjectType] = {
-        0,
-        ":/img/concrete",
-        ":/img/brick",
-        ":/img/bush",
-        ":/img/ice",
-        ":/img/water",
+        0, ":/img/concrete", ":/img/brick", ":/img/bush", ":/img/ice", ":/img/water",
     };
     static QVector<QImage> probes; // keeps full scaled textures.
     // into this size we should draw our texture to fully fit.
@@ -147,33 +123,31 @@ void QMLBridge::mapLoaded()
 
     Board::Iterator it = _game->board()->iterate();
     while (it.isValid()) {
-        QPainter *painter = *it == Bush? &bushPainter : &lowerPainter;
-        QImage &probe = probes[*it];
-        QPoint pos = it.pos() * minBlockSize;
-        int probeX = pos.x() % (_game->board()->blockDivider() * minBlockSize);
-        int probeY = pos.y() % (_game->board()->blockDivider() * minBlockSize);
-        painter->drawImage(pos, probe,
-                           QRect(probeX, probeY, minBlockSize, minBlockSize));
+        QPainter *painter = *it == Bush ? &bushPainter : &lowerPainter;
+        QImage   &probe   = probes[*it];
+        QPoint    pos     = it.pos() * minBlockSize;
+        int       probeX  = pos.x() % (_game->board()->blockDivider() * minBlockSize);
+        int       probeY  = pos.y() % (_game->board()->blockDivider() * minBlockSize);
+        painter->drawImage(pos, probe, QRect(probeX, probeY, minBlockSize, minBlockSize));
         ++it;
     }
 
     // that's the most easy way. QQuickImageProvider is just a holy crap (I'm sorry)
     // and QSG* is probably not expected by interviewers and it's anyway even
     // more complicated even if idealogically more correct.
-    //lowerLayer.save(_lowerFilename);
-    //bushLayer.save(_bushFilename);
+    // lowerLayer.save(_lowerFilename);
+    // bushLayer.save(_bushFilename);
 
     emit mapRendered();
 }
 
 void QMLBridge::newTankAvailable(QObject *obj)
 {
-    Tank *tank = qobject_cast<Tank*>(obj);
+    Tank *tank = qobject_cast<Tank *>(obj);
 
     connect(tank, &Tank::fired, this, &QMLBridge::newBulletAvailable);
     connect(tank, &Tank::moved, this, &QMLBridge::moveTank);
     connect(tank, &Tank::tankDestroyed, this, &QMLBridge::destroyTank);
-
 
     QString id = QString("tank") + QString::number(_qmlId++);
     //_activeBlocks.insert(id, tank.dynamicCast<Block>());
@@ -183,10 +157,9 @@ void QMLBridge::newTankAvailable(QObject *obj)
 
 void QMLBridge::newBulletAvailable()
 {
-    Bullet *bullet = qobject_cast<Tank*>(sender())->bullet().data();
+    Bullet *bullet = qobject_cast<Tank *>(sender())->bullet().data();
 
     connect(bullet, &DynamicBlock::moved, this, &QMLBridge::moveBullet);
-
 
     QString id = QString("bullet") + QString::number(_qmlId++);
     //_activeBlocks.insert(id, tank.dynamicCast<Block>());
@@ -194,11 +167,10 @@ void QMLBridge::newBulletAvailable()
 
     QVariantMap vb;
     vb["id"] = id;
-    //vb["affinity"] = bullet->affinity();
+    // vb["affinity"] = bullet->affinity();
     vb["direction"] = (int)bullet->direction();
-    QRect geom = bullet->geometry();
-    vb["geometry"] = QRect(geom.topLeft() * minBlockSize,
-                              geom.size() * minBlockSize);
+    QRect geom      = bullet->geometry();
+    vb["geometry"]  = QRect(geom.topLeft() * minBlockSize, geom.size() * minBlockSize);
 
     connect(bullet, &Bullet::detonated, this, &QMLBridge::detonateBullet);
     emit newBullet(vb);
@@ -206,55 +178,47 @@ void QMLBridge::newBulletAvailable()
 
 void QMLBridge::moveTank()
 {
-    auto tank = qobject_cast<Tank*>(sender());
+    auto tank = qobject_cast<Tank *>(sender());
     emit tankUpdated(tank2variant(tank));
 }
 
-void QMLBridge::destroyTank()
-{
-    emit tankDestroyed(sender()->property("qmlid").toString());
-}
+void QMLBridge::destroyTank() { emit tankDestroyed(sender()->property("qmlid").toString()); }
 
 void QMLBridge::moveBullet()
 {
-    auto bullet = qobject_cast<Bullet*>(sender());
-    //qDebug() << "New position: " << bullet->geometry().topLeft() * minBlockSize;
-    emit bulletMoved(bullet->property("qmlid").toString(),
-                    bullet->geometry().topLeft() * minBlockSize);
+    auto bullet = qobject_cast<Bullet *>(sender());
+    // qDebug() << "New position: " << bullet->geometry().topLeft() * minBlockSize;
+    emit bulletMoved(bullet->property("qmlid").toString(), bullet->geometry().topLeft() * minBlockSize);
 }
 
 void QMLBridge::detonateBullet()
 {
-    auto bullet = qobject_cast<Bullet*>(sender());
+    auto bullet = qobject_cast<Bullet *>(sender());
     emit bulletDetonated(bullet->property("qmlid").toString(), (int)bullet->explosionType());
 }
 
 QVariant QMLBridge::tank2variant(Tank *tank)
 {
     QVariantMap vtank;
-    vtank["id"] = tank->property("qmlid").toString();
-    vtank["affinity"] = (int)tank->affinity();
-    vtank["variant"] = tank->variant();
+    vtank["id"]        = tank->property("qmlid").toString();
+    vtank["affinity"]  = (int)tank->affinity();
+    vtank["variant"]   = tank->variant();
     vtank["direction"] = (int)tank->direction();
-    QRect tankGeom = tank->geometry();
-    vtank["geometry"] = QRect(tankGeom.topLeft() * minBlockSize,
-                              tankGeom.size() * minBlockSize);
+    QRect tankGeom     = tank->geometry();
+    vtank["geometry"]  = QRect(tankGeom.topLeft() * minBlockSize, tankGeom.size() * minBlockSize);
     return vtank;
 }
 
-void QMLBridge::restart(int playersCount)
-{
-    _game->start(playersCount);
-}
+void QMLBridge::restart(int playersCount) { _game->start(playersCount); }
 
 void QMLBridge::removeBlock(const QRect &r)
 {
-    emit blockRemoved(QRect(r.topLeft()*minBlockSize, r.size()*minBlockSize));
+    emit blockRemoved(QRect(r.topLeft() * minBlockSize, r.size() * minBlockSize));
 }
 
 void QMLBridge::humanTankAction(int player, int key)
 {
-    //qDebug() << "Catched start!";
+    // qDebug() << "Catched start!";
     if (key < 4) {
         _game->playerMoveRequested(player, key);
     } else {
@@ -264,7 +228,7 @@ void QMLBridge::humanTankAction(int player, int key)
 
 void QMLBridge::humanTankActionStop(int player, int key)
 {
-    //qDebug() << "Catched stop!";
+    // qDebug() << "Catched stop!";
     if (key < 4) {
         _game->playerStopMoveRequested(player, key);
     } else {
@@ -272,4 +236,4 @@ void QMLBridge::humanTankActionStop(int player, int key)
     }
 }
 
-} //namespace Tanks
+} // namespace Tanks

@@ -29,14 +29,8 @@
 
 namespace Tanks {
 
-AbstractMapLoader::AbstractMapLoader()
-{
+AbstractMapLoader::AbstractMapLoader() { }
 
-}
-
-AbstractMapLoader::~AbstractMapLoader()
-{
-
-}
+AbstractMapLoader::~AbstractMapLoader() { }
 
 } // namespace Tanks

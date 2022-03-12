@@ -26,23 +26,15 @@
 */
 
 #include "ai.h"
-#include "game.h"
-#include "board.h"
 #include "aiplayer.h"
+#include "board.h"
+#include "game.h"
 
 namespace Tanks {
 
-AI::AI(Game *game) : QObject(game),
-    _game(game),
-    _activateClock(0)
-{
+AI::AI(Game *game) : QObject(game), _game(game), _activateClock(0) { }
 
-}
-
-AI::~AI()
-{
-    reset();
-}
+AI::~AI() { reset(); }
 
 void AI::reset()
 {
@@ -93,7 +85,7 @@ void AI::clockTick()
         _activateClock = 100;
     }
 
-    for(auto &p: _activePlayers) {
+    for (auto &p : _activePlayers) {
         p->clockTick();
     }
 }

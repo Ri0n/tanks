@@ -29,9 +29,6 @@
 
 namespace Tanks {
 
-StaticBlock::StaticBlock()
-{
-
-}
+StaticBlock::StaticBlock() { }
 
 } // namespace Tanks

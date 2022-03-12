@@ -28,17 +28,14 @@
 #ifndef TANKS_TANK_H
 #define TANKS_TANK_H
 
-#include "dynamicblock.h"
 #include "bullet.h"
+#include "dynamicblock.h"
 
 namespace Tanks {
 
-class Tank : public DynamicBlock
-{
+class Tank : public DynamicBlock {
     Q_OBJECT
 public:
-
-
     enum FriendlyVariant {
         SmallTank,
         SpeedFireTank,
@@ -58,13 +55,12 @@ public:
     Tank(Affinity affinity, quint8 variant = 0);
 
     inline Affinity affinity() const { return _affinity; }
-    inline quint8 variant() const { return _variant; }
-    void setTankDefaults();
+    inline quint8   variant() const { return _variant; }
+    void            setTankDefaults();
 
     inline bool canShoot() const { return _shootTicks == 0; }
 
-    bool isArmorPiercing() const
-    { return (_affinity == Friendly) && (_variant == ArmorPiercingTank); }
+    bool isArmorPiercing() const { return (_affinity == Friendly) && (_variant == ArmorPiercingTank); }
 
     void fire();
     void resetShootClock();
@@ -77,9 +73,12 @@ public:
     void selfDestroy();
 
     QSharedPointer<Bullet> takeBullet()
-    { QSharedPointer<Bullet> ret; _bullet.swap(ret); return ret; }
+    {
+        QSharedPointer<Bullet> ret;
+        _bullet.swap(ret);
+        return ret;
+    }
     QSharedPointer<Bullet> bullet() const { return _bullet; }
-
 
 signals:
     void tankDestroyed();
@@ -87,11 +86,11 @@ signals:
     void fired();
 
 private:
-    Affinity _affinity;
-    quint8 _variant;
-    quint8 _armorLevel;
-    quint8 _bulletCount;
-    int _shootTicks;
+    Affinity               _affinity;
+    quint8                 _variant;
+    quint8                 _armorLevel;
+    quint8                 _bulletCount;
+    int                    _shootTicks;
     QSharedPointer<Bullet> _bullet;
 };
 

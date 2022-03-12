@@ -29,10 +29,7 @@
 
 namespace Tanks {
 
-AbstractPlayer::AbstractPlayer(QObject *parent) : QObject(parent)
-{
-
-}
+AbstractPlayer::AbstractPlayer(QObject *parent) : QObject(parent) { }
 
 void AbstractPlayer::clockTick()
 {

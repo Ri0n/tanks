@@ -28,8 +28,8 @@
 #ifndef QMLBRIDGE_H
 #define QMLBRIDGE_H
 
-#include <QObject>
 #include <QImage>
+#include <QObject>
 #include <QTemporaryDir>
 #include <QVariant>
 
@@ -40,8 +40,7 @@ namespace Tanks {
 class Game;
 class Tank;
 
-class QMLBridge : public QObject
-{
+class QMLBridge : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString bridgeId READ bridgeId)
     Q_PROPERTY(QSize boardImageSize READ boardImageSize NOTIFY mapRendered)
@@ -55,13 +54,13 @@ public:
     QImage lowerMapImage() const;
     QImage bushImage() const;
 
-    QSize boardImageSize() const;
-    QRect flagGeometry() const;
+    QSize   boardImageSize() const;
+    QRect   flagGeometry() const;
     QString flagFile() const;
     QString lifesStat() const;
 
     inline QString bridgeId() const { return _bridgeId; }
-    void setBridgeId(const QString &id);
+    void           setBridgeId(const QString &id);
 
 private:
     QVariant tank2variant(Tank *tank);
@@ -100,16 +99,17 @@ private slots:
     void moveBullet();
     void destroyTank();
     void detonateBullet();
+
 private:
-    QString _bridgeId;
+    QString       _bridgeId;
     QTemporaryDir _tmpDir;
-    Game *_game;
+    Game         *_game;
 
     QImage _lowerMapImage;
     QImage _bushImage;
 
     int _qmlId;
-    //QHash<QString, QWeakPointer<Block>> _activeBlocks;
+    // QHash<QString, QWeakPointer<Block>> _activeBlocks;
 };
 
 } // namespace Tanks

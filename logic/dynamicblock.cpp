@@ -29,9 +29,7 @@
 
 namespace Tanks {
 
-DynamicBlock::DynamicBlock(quint8 speed, Direction direction) :
-    _clockPhase(0),
-    _direction(direction)
+DynamicBlock::DynamicBlock(quint8 speed, Direction direction) : _clockPhase(0), _direction(direction)
 {
     setSpeed(speed);
 }
@@ -43,10 +41,7 @@ void DynamicBlock::clockTick()
     }
 }
 
-bool DynamicBlock::canMove() const
-{
-    return _clockPhase == 0;
-}
+bool DynamicBlock::canMove() const { return _clockPhase == 0; }
 
 void DynamicBlock::move()
 {
@@ -78,7 +73,7 @@ QRect DynamicBlock::forwardMoveRect(int distance) const
     case North:
         return QRect(_geometry.left(), _geometry.top() - distance, _geometry.width(), distance);
     case South:
-        return QRect(_geometry.left(), _geometry.y()+_geometry.height(), _geometry.width(), distance);
+        return QRect(_geometry.left(), _geometry.y() + _geometry.height(), _geometry.width(), distance);
     case West:
         return QRect(_geometry.left() - distance, _geometry.top(), distance, _geometry.height());
     case East:

@@ -32,8 +32,7 @@ class QQmlApplicationEngine;
 
 namespace Tanks {
 
-class QMLMain
-{
+class QMLMain {
 public:
     QMLMain();
     ~QMLMain();

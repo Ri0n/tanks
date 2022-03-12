@@ -25,52 +25,44 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QTimer>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QTimer>
 
-#include "game.h"
-#include "humanplayer.h"
+#include "ai.h"
 #include "aiplayer.h"
 #include "board.h"
+#include "flag.h"
+#include "game.h"
+#include "humanplayer.h"
 #include "randommaploader.h"
 #include "tank.h"
-#include "ai.h"
-#include "flag.h"
 
 namespace Tanks {
 
-class GamePrivate
-{
+class GamePrivate {
 public:
-    GamePrivate(Game *game) :
-        game(game),
-        board(),
-        mapLoader(nullptr),
-        playersCount(1)
-    {}
+    GamePrivate(Game *game) : game(game), board(), mapLoader(nullptr), playersCount(1) { }
 
-    Game *game;
-    Board *board;
+    Game              *game;
+    Board             *board;
     AbstractMapLoader *mapLoader;
-    QTimer *clock;
-    quint8 playersCount;
-    AI *ai;
+    QTimer            *clock;
+    quint8             playersCount;
+    AI                *ai;
 
-    QList<QSharedPointer<HumanPlayer>> humans;
+    QList<QSharedPointer<HumanPlayer>>  humans;
     QLinkedList<QSharedPointer<Bullet>> bullets;
 
     QSharedPointer<Flag> flag;
 };
 
-
-Game::Game(QObject *parent) : QObject(parent),
-    _d(new GamePrivate(this))
+Game::Game(QObject *parent) : QObject(parent), _d(new GamePrivate(this))
 {
-    _d->board = new Board(this);
-    _d->ai = new AI(this);
+    _d->board     = new Board(this);
+    _d->ai        = new AI(this);
     _d->mapLoader = new RandomMapLoader();
-    _d->flag = QSharedPointer<Flag>(new Flag);
+    _d->flag      = QSharedPointer<Flag>(new Flag);
 
     _d->clock = new QTimer(this);
     _d->clock->setInterval(50);
@@ -94,25 +86,16 @@ void Game::reset()
     //_d->board->reset();
 }
 
-Board *Game::board() const
-{
-    return _d->board;
-}
+Board *Game::board() const { return _d->board; }
 
 void Game::setPlayersCount(int n)
 {
     _d->playersCount = qMax(1, qMin(n, 20)); // it makes me think about network support :)
 }
 
-int Game::playersCount()
-{
-    return _d->playersCount;
-}
+int Game::playersCount() { return _d->playersCount; }
 
-int Game::aiLifes()
-{
-    return _d->ai->lifesCount();
-}
+int Game::aiLifes() { return _d->ai->lifesCount(); }
 
 int Game::playerLifes(int playerId)
 {
@@ -126,10 +109,7 @@ int Game::playerLifes(int playerId)
     return 0;
 }
 
-QSharedPointer<Flag> &Game::flag() const
-{
-    return _d->flag;
-}
+QSharedPointer<Flag> &Game::flag() const { return _d->flag; }
 
 void Game::connectPlayerSignals(AbstractPlayer *player)
 {
@@ -199,7 +179,7 @@ void Game::mapReady()
     emit mapLoaded();
 
     for (int i = 0; i < _d->playersCount; i++) {
-        auto human = new HumanPlayer(this,i);
+        auto human = new HumanPlayer(this, i);
         connectPlayerSignals(human);
         _d->humans.append(QSharedPointer<HumanPlayer>(human));
         human->start();
@@ -213,10 +193,10 @@ void Game::mapReady()
 
 void Game::newTankAvailable()
 {
-    //qDebug() << "New tank!";
+    // qDebug() << "New tank!";
     AbstractPlayer *player = qobject_cast<AbstractPlayer *>(sender());
-    auto tank = player->tank();
-    emit newTank(tank.data()); // let's believe it won't be destroyed and connection is direct
+    auto            tank   = player->tank();
+    emit            newTank(tank.data()); // let's believe it won't be destroyed and connection is direct
 
     // the last signal
     connect(tank.data(), &Tank::fired, this, &Game::onTankFired);
@@ -224,8 +204,8 @@ void Game::newTankAvailable()
 
 void Game::onTankFired()
 {
-    Tank *tank = qobject_cast<Tank *>(sender());
-    auto bullet = tank->takeBullet();
+    Tank *tank   = qobject_cast<Tank *>(sender());
+    auto  bullet = tank->takeBullet();
     _d->bullets.prepend(bullet);
 }
 
@@ -247,8 +227,8 @@ void Game::moveBullets()
     while (it != _d->bullets.end()) {
         auto bullet = *it;
 
-        bool clashFound = false;
-        Bullet::ExplosionType explType = Bullet::Explosion;
+        bool                  clashFound = false;
+        Bullet::ExplosionType explType   = Bullet::Explosion;
         if (bullet->affinity() == Alien) {
             foreach (auto p, _d->humans) {
                 if (p->tank() && p->tank()->hasClash(*bullet)) {
@@ -277,8 +257,8 @@ void Game::moveBullets()
         }
         if (!clashFound) {
             // meet other bullets
-            auto it2 = it + 1;
-            Affinity invAff = bullet->affinity() == Alien? Friendly : Alien;
+            auto     it2    = it + 1;
+            Affinity invAff = bullet->affinity() == Alien ? Friendly : Alien;
             while (it2 != _d->bullets.end()) {
                 auto &b2 = **it2;
                 if (b2.affinity() == invAff && b2.hasClash(*bullet)) {
@@ -296,7 +276,7 @@ void Game::moveBullets()
             bullet->explode(explType);
         } else {
             QRect fmr = bullet->forwardMoveRect();
-            //qDebug() << "Bullet forward" << fmr;
+            // qDebug() << "Bullet forward" << fmr;
             auto props = _d->board->rectProps(fmr);
             if (props & Board::BulletObstackle) {
 
@@ -315,7 +295,7 @@ void Game::moveBullets()
                         props = _d->board->blockProperties(p);
                         if (props & Board::Breakable) {
                             if (bullet->level() == Bullet::ArmorPiercing || !(props & Board::Sturdy)) {
-                                QRect r(p, QSize(1,1));
+                                QRect r(p, QSize(1, 1));
                                 _d->board->renderBlock(Nothing, r);
                                 emit blockRemoved(r);
                                 brickDamage = true;
@@ -324,17 +304,17 @@ void Game::moveBullets()
                     }
                 }
                 it = _d->bullets.erase(it);
-                //qDebug("Remove!!!");
-                bullet->explode(brickDamage? Bullet::BrickDestroyed : Bullet::NoDamage);
+                // qDebug("Remove!!!");
+                bullet->explode(brickDamage ? Bullet::BrickDestroyed : Bullet::NoDamage);
             } else {
                 if (bullet->canMove()) {
                     bullet->move();
-                    if (!QRect(QPoint(0,0), _d->board->size()).contains(bullet->geometry())) {
+                    if (!QRect(QPoint(0, 0), _d->board->size()).contains(bullet->geometry())) {
                         it = _d->bullets.erase(it);
                         bullet->explode(Bullet::NoDamage);
                         continue;
                     }
-                    //emit bulletMoved(bullet.data());
+                    // emit bulletMoved(bullet.data());
                 }
 
                 bullet->clockTick();

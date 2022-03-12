@@ -30,15 +30,11 @@
 
 namespace Tanks {
 
-QMLMapImageProvider::QMLMapImageProvider() :
-    QQuickImageProvider(QQmlImageProviderBase::Image)
-{
-
-}
+QMLMapImageProvider::QMLMapImageProvider() : QQuickImageProvider(QQmlImageProviderBase::Image) { }
 
 void QMLMapImageProvider::registerBridge(QMLBridge *bridge)
 {
-    int i = 0;
+    int     i = 0;
     QString id;
     do {
         id = QString("b%1").arg(i++);
@@ -50,17 +46,17 @@ void QMLMapImageProvider::registerBridge(QMLBridge *bridge)
 
 QImage QMLMapImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
-    QSize s(16,16); // size of tank in px
+    QSize s(16, 16); // size of tank in px
     if (size) {
         *size = s;
     }
 
-    QStringList idParts = id.split('/');
-    QString bridgeId = idParts[0];
-    QString layerId = idParts[1];
+    QStringList idParts  = id.split('/');
+    QString     bridgeId = idParts[0];
+    QString     layerId  = idParts[1];
 
-    QMLBridge *bridge = 0;
-    QMutableMapIterator<QString,QPointer<QMLBridge>> it(_bridges);
+    QMLBridge                                        *bridge = 0;
+    QMutableMapIterator<QString, QPointer<QMLBridge>> it(_bridges);
     while (it.hasNext()) {
         auto n = it.next();
         if (!n.value()) { // dangled pointer
@@ -94,6 +90,6 @@ QImage QMLMapImageProvider::requestImage(const QString &id, QSize *size, const Q
     return img;
 }
 
-QMap<QString,QPointer<QMLBridge>> QMLMapImageProvider::_bridges;
+QMap<QString, QPointer<QMLBridge>> QMLMapImageProvider::_bridges;
 
 } // namespace Tanks

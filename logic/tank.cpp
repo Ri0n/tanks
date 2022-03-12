@@ -29,10 +29,7 @@
 
 namespace Tanks {
 
-Tank::Tank(Affinity affinity, quint8 variant) :
-    _affinity(affinity),
-    _variant(variant),
-    _shootTicks(0)
+Tank::Tank(Affinity affinity, quint8 variant) : _affinity(affinity), _variant(variant), _shootTicks(0)
 {
     setTankDefaults();
     _geometry.setWidth(4); // it's in board coords. so 4 instead of expected 2
@@ -59,11 +56,10 @@ void Tank::setTankDefaults()
 
 void Tank::fire()
 {
-    auto b = new Bullet(_affinity,
-                        isArmorPiercing()?Bullet::ArmorPiercing : Bullet::Regular);
+    auto b = new Bullet(_affinity, isArmorPiercing() ? Bullet::ArmorPiercing : Bullet::Regular);
     b->setSpeed(_affinity == Alien && _variant == FastBulletTank ? 3 : 2);
 
-    QRect fmr = QRect(0,0,2,2);
+    QRect fmr = QRect(0, 0, 2, 2);
     fmr.moveCenter(_geometry.center());
     int dx = 0, dy = 0;
     switch (_direction) {
@@ -99,10 +95,7 @@ void Tank::resetShootClock()
     }
 }
 
-DynamicBlock::OutBoardAction Tank::outBoardAction() const
-{
-    return DynamicBlock::StopMove;
-}
+DynamicBlock::OutBoardAction Tank::outBoardAction() const { return DynamicBlock::StopMove; }
 
 void Tank::clockTick()
 {
@@ -114,14 +107,14 @@ void Tank::clockTick()
 
 void Tank::catchBullet()
 {
-	if (!_armorLevel) {
-		qDebug("Something went wrong");
+    if (!_armorLevel) {
+        qDebug("Something went wrong");
         return;
     }
     _armorLevel--;
     if (_armorLevel) {
-		emit armourChanged();
-	} else {
+        emit armourChanged();
+    } else {
         emit tankDestroyed();
     }
 }

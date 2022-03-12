@@ -29,9 +29,6 @@
 
 namespace Tanks {
 
-Bonus::Bonus()
-{
-
-}
+Bonus::Bonus() { }
 
 } // namespace Tanks

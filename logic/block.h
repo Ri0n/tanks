@@ -28,24 +28,23 @@
 #ifndef TANKS_BLOCK_H
 #define TANKS_BLOCK_H
 
-#include <QSharedPointer>
-#include <QRect>
 #include <QObject>
+#include <QRect>
+#include <QSharedPointer>
 
 namespace Tanks {
 
-class Block : public QObject
-{
+class Block : public QObject {
     Q_OBJECT
 public:
     Block();
 
     inline void setInitialPosition(const QPoint &p) { _geometry.moveTopLeft(p); }
 
-    inline bool hasClash(const Block &b) const
-    { return _geometry.intersects(b._geometry); }
+    inline bool hasClash(const Block &b) const { return _geometry.intersects(b._geometry); }
 
     inline const QRect &geometry() const { return _geometry; }
+
 protected:
     QRect _geometry;
 };

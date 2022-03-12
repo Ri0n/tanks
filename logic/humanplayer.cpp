@@ -27,31 +27,24 @@
 
 #include <QDebug>
 
-#include "humanplayer.h"
-#include "game.h"
 #include "board.h"
+#include "game.h"
+#include "humanplayer.h"
 
 namespace Tanks {
 
 HumanPlayer::HumanPlayer(Game *game, int playerIndex) :
-    _game(game),
-    _playerIndex(playerIndex),
-    _lifes(3),
-    _shooting(false)
+    _game(game), _playerIndex(playerIndex), _lifes(3), _shooting(false)
 {
-
 }
 
-int HumanPlayer::lifesCount() const
-{
-    return _lifes;
-}
+int HumanPlayer::lifesCount() const { return _lifes; }
 
 void HumanPlayer::start()
 {
-    _tank = QSharedPointer<Tank>(new Tank(Friendly));
+    _tank         = QSharedPointer<Tank>(new Tank(Friendly));
     _oldDirection = _tank->direction();
-	moveToStart();
+    moveToStart();
     emit newTankAvailable();
     // our handler is the last
     connect(_tank.data(), &Tank::tankDestroyed, this, &HumanPlayer::onTankDestroyed);
@@ -59,7 +52,7 @@ void HumanPlayer::start()
 
 void HumanPlayer::moveToStart()
 {
-	const auto &posList = _game->board()->friendlyStartPositions();
+    const auto &posList = _game->board()->friendlyStartPositions();
     _tank->setInitialPosition(posList[_playerIndex % posList.count()]);
 }
 
@@ -76,10 +69,7 @@ void HumanPlayer::move(Direction dir)
     }
 }
 
-void HumanPlayer::fire()
-{
-    _shooting = true;
-}
+void HumanPlayer::fire() { _shooting = true; }
 
 void HumanPlayer::stop(Direction dir)
 {
@@ -91,10 +81,7 @@ void HumanPlayer::stop(Direction dir)
     }
 }
 
-void HumanPlayer::stopFire()
-{
-    _shooting = false;
-}
+void HumanPlayer::stopFire() { _shooting = false; }
 
 void HumanPlayer::clockTick()
 {
@@ -103,14 +90,14 @@ void HumanPlayer::clockTick()
     }
     AbstractPlayer::clockTick();
 
-    QRect fmr;
+    QRect             fmr;
     Board::BlockProps props;
 
-    bool shouldMove = !_movingDir.isEmpty() && _tank->canMove();
+    bool shouldMove  = !_movingDir.isEmpty() && _tank->canMove();
     bool shouldShoot = (_shooting && _tank->canShoot());
 
     if (shouldMove || shouldShoot) {
-        fmr = _tank->forwardMoveRect(); // space before tank it's going to occupy
+        fmr   = _tank->forwardMoveRect(); // space before tank it's going to occupy
         props = _game->board()->rectProps(fmr);
     }
 
@@ -118,20 +105,20 @@ void HumanPlayer::clockTick()
         _tank->move();
         _oldDirection = _tank->direction();
     }
-//    else if (_oldDirection != _tank->direction() && _tank->canMove()) {
-//        emit moved();
-//        _oldDirection = _tank->direction();
-//    }
+    //    else if (_oldDirection != _tank->direction() && _tank->canMove()) {
+    //        emit moved();
+    //        _oldDirection = _tank->direction();
+    //    }
 
     if (shouldShoot) {
         _tank->fire();
-	}
+    }
 }
 
 void HumanPlayer::onTankDestroyed()
 {
     if (!_lifes) {
-		qDebug("Something went wrong");
+        qDebug("Something went wrong");
         return;
     }
     _lifes--;

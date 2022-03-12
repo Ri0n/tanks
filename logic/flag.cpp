@@ -29,11 +29,7 @@
 
 namespace Tanks {
 
-Flag::Flag() :
-    _broken(false)
-{
-    _geometry.setSize(QSize(4,4));
-}
+Flag::Flag() : _broken(false) { _geometry.setSize(QSize(4, 4)); }
 
 void Flag::restore()
 {

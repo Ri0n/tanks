@@ -30,20 +30,18 @@
 
 #include <QObject>
 
-#include "tank.h"
 #include "bullet.h"
+#include "tank.h"
 
 namespace Tanks {
 
-
-class AbstractPlayer : public QObject
-{
+class AbstractPlayer : public QObject {
     Q_OBJECT
 public:
     explicit AbstractPlayer(QObject *parent = 0);
-    virtual int lifesCount() const = 0;
+    virtual int          lifesCount() const = 0;
     QSharedPointer<Tank> tank() const { return _tank; }
-    virtual void clockTick();
+    virtual void         clockTick();
 
 signals:
     void newTankAvailable();
