@@ -28,9 +28,9 @@
 #ifndef TANKS_RANDOMMAPLOADER_H
 #define TANKS_RANDOMMAPLOADER_H
 
-#include <QQueue>
-
 #include "abstractmaploader.h"
+
+#include <QQueue>
 
 namespace Tanks {
 

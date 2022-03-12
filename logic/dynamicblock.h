@@ -28,10 +28,10 @@
 #ifndef TANKS_DYNAMICBLOCK_H
 #define TANKS_DYNAMICBLOCK_H
 
-#include <QtGlobal>
-
 #include "basics.h"
 #include "block.h"
+
+#include <QtGlobal>
 
 namespace Tanks {
 

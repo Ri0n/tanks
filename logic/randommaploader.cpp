@@ -25,19 +25,17 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QDateTime>
-#include <QDebug>
-#include <QPainter>
-
 #include "randommaploader.h"
 #include "tank.h"
 
+#include <QDateTime>
+#include <QDebug>
+#include <QPainter>
+#include <QRandomGenerator>
+
 namespace Tanks {
 
-RandomMapLoader::RandomMapLoader() : boardWidth(50), boardHeight(50)
-{
-    qsrand(QDateTime::currentDateTime().toTime_t());
-}
+RandomMapLoader::RandomMapLoader() : boardWidth(50), boardHeight(50) { }
 
 bool RandomMapLoader::open()
 {
@@ -75,12 +73,12 @@ bool RandomMapLoader::open()
 
 void RandomMapLoader::generateShape(const PendingShape &shape)
 {
-    int rndWidth  = qMax(shape.minSize, qrand() % (shape.maxSize + 1));
-    int rndHeight = qMax(shape.minSize, qrand() % (shape.maxSize + 1));
-    int rndLeft   = qrand() % boardWidth - rndWidth / 2;
-    int rndTop    = qrand() % boardHeight - rndHeight / 2;
+    int rndWidth  = qMax(shape.minSize, QRandomGenerator::global()->bounded(shape.maxSize + 1));
+    int rndHeight = qMax(shape.minSize, QRandomGenerator::global()->bounded(shape.maxSize + 1));
+    int rndLeft   = QRandomGenerator::global()->bounded(boardWidth) - rndWidth / 2;
+    int rndTop    = QRandomGenerator::global()->bounded(boardHeight) - rndHeight / 2;
 
-    int shapeVariant = qrand() % 6; // with accent to ellipses
+    int shapeVariant = QRandomGenerator::global()->bounded(6); // with accent to ellipses
     switch (shapeVariant) {
     case 0:
         // vertical bar
@@ -110,7 +108,7 @@ void RandomMapLoader::generateShape(const PendingShape &shape)
     if (shape.type != Brick) {
         painter.setBrush(QColor(Qt::white));
     } else {
-        QPen pen(QColor(Qt::white));
+        QPen pen(Qt::white);
         int  penWidth = 2;
         pen.setWidth(penWidth);
         painter.setPen(pen);
@@ -148,7 +146,7 @@ QList<quint8> RandomMapLoader::enemyTanks() const
     QList<quint8> ret;
     ret.reserve(10);
     for (int i = 0; i < 20; i++) {
-        int val = qrand() % 12;
+        int val = QRandomGenerator::global()->bounded(12);
         if (val > 10) { // 11
             ret.append(Tank::ArmoredTank);
         } else if (val > 7) { // 8,9

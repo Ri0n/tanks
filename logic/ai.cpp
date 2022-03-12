@@ -30,6 +30,8 @@
 #include "board.h"
 #include "game.h"
 
+#include <QRandomGenerator>
+
 namespace Tanks {
 
 AI::AI(Game *game) : QObject(game), _game(game), _activateClock(0) { }
@@ -49,7 +51,7 @@ void AI::start()
     _tanks = _game->board()->initialEnemyTanks();
     for (int i = 0; i < 8; i++) { // we want 4 tanks at once on the map
         auto robot = QSharedPointer<AIPlayer>(new AIPlayer(this));
-        _inactivePlayers.append(robot);
+        _inactivePlayers.push_back(robot);
 
         // we need this connection first to keep stats valid
         connect(robot.data(), &AIPlayer::lifeLost, this, &AI::deactivatePlayer);
@@ -70,7 +72,7 @@ QSharedPointer<AIPlayer> AI::findClash(const QSharedPointer<Block> &block)
 QPoint AI::initialPosition() const
 {
     auto &pos = _game->board()->enemyStartPositions();
-    return pos.value(qrand() % pos.count());
+    return pos.value(QRandomGenerator::global()->bounded(pos.count()));
 }
 
 void AI::clockTick()
@@ -78,9 +80,10 @@ void AI::clockTick()
     if (_activateClock) {
         _activateClock--;
     }
-    if (!_activateClock && _inactivePlayers.count() && _tanks.count()) {
-        auto player = _inactivePlayers.takeLast();
-        _activePlayers.append(player);
+    if (!_activateClock && !_inactivePlayers.empty() && _tanks.count()) {
+        auto player = _inactivePlayers.front();
+        _inactivePlayers.pop_front();
+        _activePlayers.push_back(player);
         player->start();
         _activateClock = 100;
     }
@@ -95,7 +98,7 @@ void AI::deactivatePlayer()
     auto it = _activePlayers.begin();
     while (it != _activePlayers.end()) {
         if ((*it).data() == sender()) {
-            _inactivePlayers.append(*it);
+            _inactivePlayers.push_back(*it);
             _activePlayers.erase(it);
             break;
         }

@@ -28,10 +28,10 @@
 #ifndef TANKS_ABSTRACTMAPLOADER_H
 #define TANKS_ABSTRACTMAPLOADER_H
 
+#include "basics.h"
+
 #include <QRect>
 #include <QtGlobal>
-
-#include "basics.h"
 
 namespace Tanks {
 

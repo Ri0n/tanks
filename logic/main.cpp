@@ -25,9 +25,9 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QGuiApplication>
-
 #include "qmlmain.h"
+
+#include <QGuiApplication>
 
 int main(int argc, char *argv[])
 {

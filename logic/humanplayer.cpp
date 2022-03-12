@@ -25,11 +25,11 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QDebug>
-
+#include "humanplayer.h"
 #include "board.h"
 #include "game.h"
-#include "humanplayer.h"
+
+#include <QDebug>
 
 namespace Tanks {
 
@@ -60,8 +60,8 @@ void HumanPlayer::move(Direction dir)
 {
     if (_tank) {
         Direction curDir = _tank->direction();
-        _movingDir.removeAll(dir);
-        _movingDir.prepend(dir);
+        _movingDir.erase(std::remove(_movingDir.begin(), _movingDir.end(), dir), _movingDir.end());
+        _movingDir.push_front(dir);
         if (curDir != dir) {
             _oldDirection = curDir;
             _tank->setDirection(dir);
@@ -75,9 +75,11 @@ void HumanPlayer::stop(Direction dir)
 {
     // we can stop pressing a key, but it does not mean other keys are not pressed
     // so we have to figure out what's left and continue moving
-    _movingDir.removeAll(dir);
-    if (!_movingDir.isEmpty()) {
-        move(_movingDir.takeFirst());
+    _movingDir.erase(std::remove(_movingDir.begin(), _movingDir.end(), dir), _movingDir.end());
+    if (!_movingDir.empty()) {
+        auto dir = _movingDir.front();
+        _movingDir.pop_front();
+        move(dir);
     }
 }
 
@@ -93,7 +95,7 @@ void HumanPlayer::clockTick()
     QRect             fmr;
     Board::BlockProps props;
 
-    bool shouldMove  = !_movingDir.isEmpty() && _tank->canMove();
+    bool shouldMove  = !_movingDir.empty() && _tank->canMove();
     bool shouldShoot = (_shooting && _tank->canShoot());
 
     if (shouldMove || shouldShoot) {

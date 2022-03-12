@@ -28,10 +28,10 @@
 #ifndef TANKS_ABSTRACTPLAYER_H
 #define TANKS_ABSTRACTPLAYER_H
 
-#include <QObject>
-
 #include "bullet.h"
 #include "tank.h"
+
+#include <QObject>
 
 namespace Tanks {
 

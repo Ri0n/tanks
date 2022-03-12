@@ -74,7 +74,7 @@ public slots:
     void playerStopMoveRequested(int playerNum, int direction);
     void playerStopFireRequested(int playerNum);
 private slots:
-    void connectPlayerSignals(AbstractPlayer *player);
+    void connectPlayerSignals(Tanks::AbstractPlayer *player);
     void mapReady();
     void clockTick();
 

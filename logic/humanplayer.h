@@ -28,10 +28,10 @@
 #ifndef TANKS_HUMANPLAYER_H
 #define TANKS_HUMANPLAYER_H
 
-#include <QLinkedList>
-
 #include "abstractplayer.h"
 #include "basics.h"
+
+#include <list>
 
 namespace Tanks {
 
@@ -59,12 +59,12 @@ private slots:
     void onTankDestroyed();
 
 private:
-    Game                  *_game;
-    int                    _playerIndex;
-    int                    _lifes;
-    bool                   _shooting;
-    Direction              _oldDirection;
-    QLinkedList<Direction> _movingDir;
+    Game                *_game;
+    int                  _playerIndex;
+    int                  _lifes;
+    bool                 _shooting;
+    Direction            _oldDirection;
+    std::list<Direction> _movingDir;
 };
 
 } // namespace Tanks

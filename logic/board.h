@@ -28,13 +28,12 @@
 #ifndef TANKS_BOARD_H
 #define TANKS_BOARD_H
 
-#include <QLinkedList>
+#include "abstractmaploader.h"
+#include "dynamicblock.h"
+
 #include <QObject>
 #include <QSize>
 #include <QVector>
-
-#include "abstractmaploader.h"
-#include "dynamicblock.h"
 
 namespace Tanks {
 
@@ -121,7 +120,7 @@ public slots:
 private:
     QSize            _size;
     QVector<MapItem> _map;
-    // QLinkedList<QSharedPointer<DynamicBlock>> _dynBlocks;
+    // std::list<QSharedPointer<DynamicBlock>> _dynBlocks;
     QList<quint8> _initialEnemyTanks;
     QList<QPoint> _enemyStartPositions;
     QList<QPoint> _friendlyStartPositions;

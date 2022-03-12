@@ -25,18 +25,20 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QCoreApplication>
-#include <QDebug>
-#include <QTimer>
-
+#include "game.h"
 #include "ai.h"
 #include "aiplayer.h"
 #include "board.h"
 #include "flag.h"
-#include "game.h"
 #include "humanplayer.h"
 #include "randommaploader.h"
 #include "tank.h"
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QTimer>
+
+#include <list>
 
 namespace Tanks {
 
@@ -51,8 +53,8 @@ public:
     quint8             playersCount;
     AI                *ai;
 
-    QList<QSharedPointer<HumanPlayer>>  humans;
-    QLinkedList<QSharedPointer<Bullet>> bullets;
+    QList<QSharedPointer<HumanPlayer>> humans;
+    std::list<QSharedPointer<Bullet>>  bullets;
 
     QSharedPointer<Flag> flag;
 };
@@ -206,7 +208,7 @@ void Game::onTankFired()
 {
     Tank *tank   = qobject_cast<Tank *>(sender());
     auto  bullet = tank->takeBullet();
-    _d->bullets.prepend(bullet);
+    _d->bullets.push_front(bullet);
 }
 
 void Game::clockTick()
@@ -257,7 +259,8 @@ void Game::moveBullets()
         }
         if (!clashFound) {
             // meet other bullets
-            auto     it2    = it + 1;
+            auto it2 = it;
+            ++it2;
             Affinity invAff = bullet->affinity() == Alien ? Friendly : Alien;
             while (it2 != _d->bullets.end()) {
                 auto &b2 = **it2;

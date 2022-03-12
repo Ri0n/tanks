@@ -28,10 +28,11 @@
 #ifndef TANKS_AI_H
 #define TANKS_AI_H
 
-#include <QLinkedList>
+#include "aiplayer.h"
+
 #include <QObject>
 
-#include "aiplayer.h"
+#include <list>
 
 namespace Tanks {
 
@@ -45,7 +46,7 @@ public:
     void                     reset();
     inline Game             *game() const { return _game; }
     inline int               pendingTanks() const { return _tanks.count(); }
-    inline int               lifesCount() const { return _tanks.count() + _activePlayers.count(); }
+    inline int               lifesCount() const { return _tanks.count() + _activePlayers.size(); }
     inline quint8            takeTank() { return _tanks.takeFirst(); }
     void                     start();
     QSharedPointer<AIPlayer> findClash(const QSharedPointer<Block> &block);
@@ -55,7 +56,7 @@ public:
     void clockTick();
 
 signals:
-    void newPlayer(AIPlayer *);
+    void newPlayer(Tanks::AIPlayer *);
 
 public slots:
 
@@ -63,11 +64,11 @@ private slots:
     void deactivatePlayer();
 
 private:
-    Game                                 *_game;
-    QList<quint8>                         _tanks;
-    QLinkedList<QSharedPointer<AIPlayer>> _activePlayers;
-    QLinkedList<QSharedPointer<AIPlayer>> _inactivePlayers;
-    int                                   _activateClock;
+    Game                               *_game;
+    QList<quint8>                       _tanks;
+    std::list<QSharedPointer<AIPlayer>> _activePlayers;
+    std::list<QSharedPointer<AIPlayer>> _inactivePlayers;
+    int                                 _activateClock;
 };
 
 } // namespace Tanks

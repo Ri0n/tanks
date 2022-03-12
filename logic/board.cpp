@@ -25,12 +25,12 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QTimer>
-
-#include "abstractmaploader.h"
 #include "board.h"
+#include "abstractmaploader.h"
 #include "staticblock.h"
 #include "tank.h"
+
+#include <QTimer>
 
 namespace Tanks {
 
@@ -135,13 +135,13 @@ Board::BlockProps Board::blockTypeProperties(MapObjectType type) const
     case Nothing:
     case Bush:
     case LastMapObjectType: // make compiler happy
-        return 0;
+        return {};
     case Ice:
         return BadManoeuvre;
     case Water:
         return TankObstackle;
     }
-    return 0;
+    return {};
 }
 
 } // namespace Tanks

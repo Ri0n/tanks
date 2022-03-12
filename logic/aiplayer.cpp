@@ -25,13 +25,14 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QDebug>
-
-#include "ai.h"
 #include "aiplayer.h"
+#include "ai.h"
 #include "board.h"
 #include "flag.h"
 #include "game.h"
+
+#include <QDebug>
+#include <QRandomGenerator>
 
 namespace Tanks {
 
@@ -61,8 +62,8 @@ void AIPlayer::clockTick()
         Board::BlockProps props          = _ai->game()->board()->rectProps(_tank->forwardMoveRect());
         bool              canMoveForward = !(props & Board::TankObstackle);
 
-        int r = qrand() % 16;
-        int d = qrand() % 16;
+        int r = QRandomGenerator::global()->bounded(16);
+        int d = QRandomGenerator::global()->bounded(16);
 
         bool moving     = r < 15;
         bool needNewDir = !canMoveForward || d > 13;
@@ -70,7 +71,7 @@ void AIPlayer::clockTick()
         // Direction oldDir = _tank->direction();
         if (needNewDir) {
             if (_ai->game()->flag()->isBroken()) {
-                _tank->setDirection((Direction)(qrand() % 4));
+                _tank->setDirection((Direction)(QRandomGenerator::global()->bounded(4)));
             } else {
                 QPoint    tc = _tank->geometry().center();
                 QPoint    fc = _ai->game()->flag()->geometry().center();
@@ -90,8 +91,9 @@ void AIPlayer::clockTick()
                     dirs[3] = South;
                 }
 
-                int       toFlagInd = qrand() < (RAND_MAX * 0.9) ? 0 : 2;
-                Direction newDir    = dirs[toFlagInd + (d & 1)];
+                int toFlagInd
+                    = QRandomGenerator::global()->generate() < (std::numeric_limits<quint32>::max() * 0.9) ? 0 : 2;
+                Direction newDir = dirs[toFlagInd + (d & 1)];
 
                 _tank->setDirection(newDir);
             }
@@ -114,7 +116,7 @@ void AIPlayer::clockTick()
     }
 
     if (_tank->canShoot()) {
-        if (forceShoot || qrand() < RAND_MAX / 100) {
+        if (forceShoot || QRandomGenerator::global()->generate() < std::numeric_limits<quint32>::max() / 100) {
             _tank->fire();
         }
     }
