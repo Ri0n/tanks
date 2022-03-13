@@ -30,6 +30,7 @@
 
 #include <QPointer>
 #include <QQuickImageProvider>
+#include <QLatin1String>
 
 namespace Tanks {
 

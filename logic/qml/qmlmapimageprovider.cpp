@@ -70,9 +70,9 @@ QImage QMLMapImageProvider::requestImage(const QString &id, QSize *size, const Q
     Q_ASSERT(bridge);
 
     QImage img;
-    if (layerId == QLatin1Literal("map")) {
+    if (layerId == QLatin1String("map")) {
         img = bridge->lowerMapImage();
-    } else if (layerId == QLatin1Literal("bush")) {
+    } else if (layerId == QLatin1String("bush")) {
         img = bridge->bushImage();
     }
 

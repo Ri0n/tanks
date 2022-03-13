@@ -28,7 +28,6 @@
 import QtQuick 2.6
 import QtQuick.Window 2.2
 
-
 Window {
     visible: true
     width: 900
@@ -36,7 +35,7 @@ Window {
     title: qsTr("Battle City: The War")
 
 	MainForm {
-		anchors.fill: parent
+        anchors.fill: parent
 	}
 
 }
