@@ -26,7 +26,7 @@
 */
 
 import QtQuick 2.6
-import QtMultimedia 5.8
+import QtMultimedia
 import com.rsoft.tanks 1.0
 
 Row {
@@ -87,7 +87,7 @@ Row {
                 game.tanksList = [];
                 game.tanksMap = {};
 
-                for (var i=0; i < game.bulletsList.length; i++) {
+                for (let i=0; i < game.bulletsList.length; i++) {
                     game.bulletsList[i].destroy();
                 }
                 game.bulletsList = [];
@@ -119,7 +119,7 @@ Row {
                 bigExplosion(flag.x, flag.y, flag.width, flag.height)
             }
 
-            onNewTank: {
+            onNewTank: function(tank) {
 
                 var source = 'import QtQuick 2.0; Image {\n' +
                         'id:' + tank.id + '\n' +
@@ -140,7 +140,7 @@ Row {
                 game.tanksList.push(obj)
             }
 
-            onNewBullet: {
+            onNewBullet: function(bullet) {
                 var source = 'import QtQuick 2.0; Image {\n' +
                         'id:' + bullet.id + '\n' +
                         'source: "image://bulletprovider/' + bullet.direction + '"\n' +
@@ -160,12 +160,12 @@ Row {
                 shotSound.play();
             }
 
-            onBulletMoved: {
+            onBulletMoved: function(id, pos) {
                 game.bulletsMap[id].x = pos.x;
                 game.bulletsMap[id].y = pos.y;
             }
 
-            onBulletDetonated: {
+            onBulletDetonated: function(id, reason) {
                 switch (reason) {
                 case 0: // no damage
                     explNoDamageSound.play();
@@ -187,7 +187,7 @@ Row {
                 obj.destroy();
             }
 
-            onTankUpdated: {
+            onTankUpdated: function(tank) {
                 //console.log("tank id=" + tank.id + " moved")
                 var old = game.tanksMap[tank.id]
                 if (old === undefined) {
@@ -203,7 +203,7 @@ Row {
                 //console.log("x=" + old.x +  " y=" + old.y);
             }
 
-            onTankDestroyed: {
+            onTankDestroyed: function(id) {
                 var t = game.tanksMap[id]
 
                 game.bigExplosion(t.x, t.y, t.width, t.height, id)
@@ -214,7 +214,7 @@ Row {
                 delete game.tanksMap[id]
             }
 
-            onBlockRemoved: {
+            onBlockRemoved: function(block) {
                 game.pendingBlockRemove.push(block);
                 lowerLayer.markDirty(block)
                 //console.log("Dirty: " + block);
@@ -254,7 +254,7 @@ Row {
                 }
                 if (game.pendingBlockRemove.length) {
                     //console.log("Has pending remove");
-                    var ctx = getContext("2d")
+                    const ctx = getContext("2d")
                     ctx.fillStyle = "black"
 
                     for (var i = 0; i < game.pendingBlockRemove.length; i++) {
@@ -300,11 +300,11 @@ Row {
         }
 
         focus: true
-        Keys.onPressed: {
+        Keys.onPressed: function(event) {
             handleKeyEvent(event, game.qmlTankAction)
         }
 
-        Keys.onReleased: {
+        Keys.onReleased: function(event) {
             handleKeyEvent(event, game.qmlTankActionStop)
         }
 
@@ -349,27 +349,27 @@ Row {
 
     SoundEffect {
         id: shotSound
-        source: "audio/shot"
+        source: "qrc:///audio/shot"
     }
 
     SoundEffect {
         id: explNoDamageSound
-        source: "audio/expl-nodamage"
+        source: "qrc:///audio/expl-nodamage"
     }
 
     SoundEffect {
         id: explBrickSound
-        source: "audio/expl-brick"
+        source: "qrc:///audio/expl-brick"
     }
 
     SoundEffect {
         id: explTankSound
-        source: "audio/expl-tank"
+        source: "qrc:///audio/expl-tank"
     }
 
     SoundEffect {
         id: explFlagSound
-        source: "audio/expl-flag"
+        source: "qrc:///audio/expl-flag"
     }
 
 }
