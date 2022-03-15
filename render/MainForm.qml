@@ -26,7 +26,7 @@
 */
 
 import QtQuick 2.6
-import QtMultimedia 6.0
+import QtMultimedia
 import com.rsoft.tanks 1.0
 
 Row {
