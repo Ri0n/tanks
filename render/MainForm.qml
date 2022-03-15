@@ -26,7 +26,7 @@
 */
 
 import QtQuick 2.6
-import QtMultimedia 5.8
+import QtMultimedia 6.0
 import com.rsoft.tanks 1.0
 
 Row {
@@ -349,27 +349,27 @@ Row {
 
     SoundEffect {
         id: shotSound
-        source: "audio/shot"
+        source: "qrc:///audio/shot"
     }
 
     SoundEffect {
         id: explNoDamageSound
-        source: "audio/expl-nodamage"
+        source: "qrc:///audio/expl-nodamage"
     }
 
     SoundEffect {
         id: explBrickSound
-        source: "audio/expl-brick"
+        source: "qrc:///audio/expl-brick"
     }
 
     SoundEffect {
         id: explTankSound
-        source: "audio/expl-tank"
+        source: "qrc:///audio/expl-tank"
     }
 
     SoundEffect {
         id: explFlagSound
-        source: "audio/expl-flag"
+        source: "qrc:///audio/expl-flag"
     }
 
 }
