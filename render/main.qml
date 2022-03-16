@@ -30,12 +30,14 @@ import QtQuick.Window 2.2
 
 Window {
     visible: true
-    width: 900
-    height: 800
+//    width: 900
+//    height: 800
+//    visibility: "Maximized"
+    visibility:"FullScreen"
     title: qsTr("Battle City: The War")
 
-	MainForm {
+    MainForm {
         anchors.fill: parent
-	}
+    }
 
 }
