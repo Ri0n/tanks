@@ -34,6 +34,7 @@ Row {
     Rectangle {
         id: battleField
 
+
         //anchors.left: otherItem.left
 
         property alias mouseArea: lowerLayer
@@ -312,8 +313,8 @@ Row {
     }
 
     Rectangle {
-        width: 100
-        height: 900
+        width: parent.width/10.0
+        height: parent.height
         color: '#444444'
 
         //anchors.left: battleField.left
