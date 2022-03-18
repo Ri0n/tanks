@@ -37,8 +37,7 @@ namespace Tanks {
 // That's where we want to split out blocks even more.
 // For example when just half a brick is breakable by bullet
 // or tank moves just half a brick at a time
-#define MAP_SCALE_FACTOR 2
-
+#define MAP_SCALE_FACTOR  2
 Board::Board(QObject *parent) : QObject(parent) { }
 
 bool Board::loadMap(AbstractMapLoader *loader)
@@ -46,12 +45,12 @@ bool Board::loadMap(AbstractMapLoader *loader)
     if (!loader->open()) {
         return false;
     }
-    //_dynBlocks.clear();
+//    _dynBlocks.clear();
     _size = loader->dimensions() * MAP_SCALE_FACTOR;
-    _size = _size.boundedTo(QSize(1024, 1024));
-    QRect boardRect(QPoint(0, 0), _size);
-    _map.resize(_size.width() * _size.height());
-    _map.fill(0);
+    _size = _size.boundedTo(QSize( 2160,4440));
+    QRect boardRect(QPoint(10,10), _size);
+    _map.resize(4096*2160);
+
 
     while (loader->hasNext()) {
         MapObject block = loader->next();

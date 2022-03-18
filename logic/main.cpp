@@ -28,12 +28,22 @@
 #include "qmlmain.h"
 
 #include <QGuiApplication>
-
+#include <QQuickView>
 int main(int argc, char *argv[])
 {
+
     QGuiApplication app(argc, argv);
+    QQuickView viewer;
+
+viewer.setSource(QUrl("qrc/:MainForm.qml"));
+
+    viewer.showFullScreen();
+
+
 
     Tanks::QMLMain q;
 
-    return app.exec();
+
+
+     return app.exec();
 }
