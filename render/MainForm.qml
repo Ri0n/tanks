@@ -30,18 +30,32 @@ import QtMultimedia
 import com.rsoft.tanks 1.0
 
 Row {
-    anchors.fill: parent
+
+
+    anchors {
+               centerIn: parent
+               topMargin: 10
+               rightMargin: -100
+               bottomMargin: 100
+               leftMargin: 25
+           }
+
+
     Rectangle {
         id: battleField
 
-        //anchors.left: otherItem.left
+
+//        anchors.left: otherItem.left
 
         property alias mouseArea: lowerLayer
 
-        width: 200
-        height: 200
 
-        color: "red"
+
+        width: parent.width/10.0
+        height: parent.height
+
+        color: '#444444'
+
 
 
 

@@ -1,6 +1,7 @@
 import QtQuick 2.0
 
 Item {
+
     id: button
     width: 92
     height: 27
@@ -13,7 +14,7 @@ Item {
         id: rectangle1
         x: 0
         y: 9
-        width: 90
+        width: parent.width
         height: 25
         radius: 13
         anchors.horizontalCenter: parent.horizontalCenter

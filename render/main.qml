@@ -27,15 +27,23 @@
 
 import QtQuick 2.6
 import QtQuick.Window 2.2
+import QtQuick.Controls 2.15
 
 Window {
+ id : root
     visible: true
-    width: 900
-    height: 800
+
+visibility: "FullScreen"
+
+ width : Screen.width
+  height : Screen.height
+
     title: qsTr("Battle City: The War")
 
-	MainForm {
-        anchors.fill: parent
-	}
+
+    MainForm {
+
+        anchors.centerIn:  parent
+    }
 
 }
